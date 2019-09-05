@@ -3,9 +3,10 @@
 from menu import *
 import menuEntries
 menu=Menu()  #Set a Menu object
-blacklist=['w']
-whitelist=menuEntries.a
-menu.parse(True)
-#[i() for i in menu.parse(True) if i]
-#[i() for i in menu.parse(toFind=blacklist) if i ]  #Runs any function associated with any flag
+menu.parse(True)  #Run any valid flags that are passed
 Menu.setVerbose(menu.findFlag(['v', "verbose"]))
+
+print("Hello, World!")
+vprint(f"Flags:  \t{menu.getFlags()}")
+vprint(f"Assigned:\t{menu.getAssigned()}")
+vprint(f"Args:    \t{menu.getArgs()}")

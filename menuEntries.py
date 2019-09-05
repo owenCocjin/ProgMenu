@@ -8,8 +8,8 @@ def fFunc():
     '''No args are needed, as this is just for a flag'''
     print("'f' Flag called!")
 
-def wFunc():
-    print("'w' Flag called!")
+def wFunc(passed):
+    print(f"'w' Flag called, with '{passed}' attached!")
 
 def rFunc():
     print("'r' Flag called!")
@@ -17,8 +17,6 @@ def rFunc():
 '''-------------+
 |    ENTRIES    |
 +-------------'''
-f=MenuEntry(['f', "frack"], fFunc, 0)
-w=MenuEntry(['w'], wFunc, 1)
-r=MenuEntry(['r'], rFunc, 0)
-
-a=[f, w, r]
+f=MenuEntry(['f'], fFunc, 0)
+w=MenuEntry(['w', "weed"], wFunc, 1)
+r=MenuEntry(['r'], rFunc, 2)
