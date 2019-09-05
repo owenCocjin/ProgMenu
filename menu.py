@@ -1,12 +1,14 @@
 #!/usr/bin/python3
 '''
 ## Author:	Owen Cocjin
-## Version:	2.6
+## Version:	2.64
 ## Date:	04/09/19
 ## Description:	Process cmd line arguments & holds common variables
 ## Notes:
 ##	- Changed VERBOSE from a global variable to a class var for Menu
 ##	- Fixed parsing settings
+##	- Fixed issue with sgetAssigned
+##	- Fixed return values for MenuEntry run functions
 
 Uncomment and copy this into the main file:
 	>
@@ -34,7 +36,7 @@ the main file
 '''
 import sys  #Required!
 #--------User's imports--------#
-#import usershit
+#import user-required libraries
 
 '''-------------------+
 |        SETUP        |
@@ -80,9 +82,12 @@ class Menu():
 					for j in n[1:]:
 						self.flags.append(j)
 
-					#If the next arg is NOT a flag, add it
-					if menu_args[i+1][0]!='-':
-						self.assigned[n[-1]]=menu_args[i+1]
+					try:
+						#If the next arg is NOT a flag, add it
+						if menu_args[i+1][0]!='-':
+							self.assigned[n[-1]]=menu_args[i+1]
+					except:
+						pass
 
 			else:
 				#counts as an argument
@@ -94,7 +99,8 @@ class Menu():
 #Parse
 	def parse(self, p=False, *, toFind=None, dontFind=None):
 		'''Returns any functions associated with a flags/assigned/args.
-		Note: parse() does NOT run any entries.
+		Note: If p==True, parse() will return a list of results in order they appear in
+		Menu.allEntries (or in order the entries are created).
 		- if p is True, run all called flags, else just return a list of valid flags
 		- toFind is of type "list", containing MenuEntry objects
 		- dontFind is of type "list", containing strings of flags to avoid'''
@@ -105,16 +111,26 @@ class Menu():
 			'''Checks if e (of type MenuEntry) was set. Run it if it is found'''
 			if e.getFlg()==0:
 				if any(i in self.flags for i in e.getLabels()):
-					e()
+					return e()
 
 			elif e.getFlg()==1:
 				for i in self.assigned:
 					if i in e.getLabels():
-						e(self.assigned[i])
+						return e(self.assigned[i])
 
 			elif e.getFlg()==2:
 				if any(i in self.args for i in e.getLabels()):
-					e()
+					return e()
+
+			elif e.getFlg()==3:
+				for i in self.assigned:
+					if i in e.getLabels():
+						return e(self.assigned[i])
+
+				if any(i in self.flags for i in e.getLabels()):
+					return e()
+
+			return None
 
 		#Populate toFind with all menuEntries if blank
 		if not toFind:
@@ -139,7 +155,7 @@ class Menu():
 		if not p:
 			return toReturn
 		elif p:
-			[parseEntry(e) for e in toReturn]
+			return [parseEntry(e) for e in toReturn]
 
 	@classmethod
 	def getEntries(cls):
@@ -195,9 +211,15 @@ class Menu():
 		return self.assigned
 
 	def sgetAssigned(self, spec):
-		'''Get a specific value'''
+		'''Get a specific value (or at least one if it's a list)'''
 		try:
-			return self.assigned[spec]
+			#If spec is a list, test if any of the passed values were flagged
+			if type(spec)==list:
+				for i in self.assigned:
+					if i in spec:
+						return self.assigned[i]
+			else:
+				return self.assigned[spec]
 		except:
 			return None
 
@@ -257,7 +279,8 @@ class MenuEntry():
 	flg status:
 	- 0=flags
 	- 1=assigned
-	- 2=args'''
+	- 2=args
+	- 3=flags&assigned'''
 	def __init__(self, labels, function, flg=0):
 		self.labels=labels  #Labels being a list of the flags/args
 		self.function=function
@@ -268,12 +291,10 @@ class MenuEntry():
 		return f"{self.labels}\t{self.function}"
 
 	def __call__(self, *args, **kwargs):
-		self.function(*args, **kwargs)
-		return 0
+		return self.function(*args, **kwargs)
 
 	def run(self, *args, **kwargs):
-		self.function(*args, **kwargs)
-		return 0
+		return self.function(*args, **kwargs)
 
 	def getLabels(self):
 		return self.labels
