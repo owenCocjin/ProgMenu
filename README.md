@@ -12,8 +12,10 @@
 
 > Add this code to the main file to test if it's working:
 
-```from progMenu import printFAA
-printFAA()```
+```
+from progMenu import printFAA
+printFAA()
+```
 
 > the `printFAA` function prints all the passed flags, assigned, and args
 
