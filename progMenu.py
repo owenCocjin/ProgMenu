@@ -1,20 +1,20 @@
 #!/usr/bin/python3
 '''
 ## Author:	Owen Cocjin
-## Version:	2.64
-## Date:	04/09/19
+## Version:	2.9
+## Date:	10/09/19
 ## Description:	Process cmd line arguments & holds common variables
 ## Notes:
-##	- Changed VERBOSE from a global variable to a class var for Menu
-##	- Fixed parsing settings
-##	- Fixed issue with sgetAssigned
-##	- Fixed return values for MenuEntry run functions
+##	- Added names to MenuEntry classes.
+##	- Changes how parse() works. See help(parse()).
+##	- Fixed parsing: if p==False, return a list that says if flag was called
+
 
 Uncomment and copy this into the main file:
 	>
 	from menu import *
-	menu=Menu()  #Set a Menu object
-	Menu.setVerbose(menu.findFlag(['v', "verbose"]))  #Set verbosity setting
+	menu=ProgMenu()  #Set a ProgMenu object
+	vprint.setVerbose(menu.findFlag(['v', "verbose"]))  #Set verbosity setting
 	<
 
 For menu entries, it's easiest to make a seperate python file (menuEntries.py)\
@@ -29,9 +29,9 @@ the main file
 	>
 	from menu import *
 	import menuEntries
-	menu=Menu()  #Set a Menu object
-	menu.parse(True)  #Run any valid flags that are passed
-	Menu.setVerbose(menu.findFlag(['v', "verbose"]))  #Set verbosity setting
+	menu=ProgMenu()  #Set a ProgMenu object
+	PARSER=menu.parse(True)  #Run any valid flags that are passed and save them
+	vprint.setVerbose(menu.findFlag(['v', "verbose"]))  #Set verbosity setting
 	<
 '''
 import sys  #Required!
@@ -41,17 +41,23 @@ import sys  #Required!
 '''-------------------+
 |        SETUP        |
 +-------------------'''
-def vprint(toPrint):
-	'''Only print if VERBOSE is True'''
-	if Menu.VERBOSE:
-		print(toPrint)
-		return 0
-	else:
-		return 1
+class vprint():
+    '''Verbose printing'''
+    VERBOSE=False
+    def __init__(self, *args, **kwargs):
+        if vprint.VERBOSE:
+            print(*args, **kwargs)
 
-class Menu():
+    @classmethod
+    def getVerbose(cls):
+        return cls.VERBOSE
+
+    @classmethod
+    def setVerbose(cls, new):
+        cls.VERBOSE=True if new else False
+
+class ProgMenu():
 	menuEntries=[]  #Class-wide list of all menu entries
-	VERBOSE=False  #Class-wide verbosity setting
 
 	def __init__(self):
 		#--------Variables--------#
@@ -96,16 +102,47 @@ class Menu():
 	def __str__(self):
 		return f"flags:\t\t{self.flags}\nassigned:\t{self.assigned}\nargs:\t\t{self.args}"
 
+	@classmethod
+	def listNames(cls):
+		'''Returns a list of names of entries in order of creation.'''
+		return [i.getName() for i in ProgMenu.menuEntries]
+
+	@classmethod
+	def printEntries(cls):
+		'''Prints entries'''
+		[print(i) for i in ProgMenu.menuEntries]
+
+	@classmethod
+	def getMenuEntries(cls):
+		return ProgMenu.menuEntries
+
+	@classmethod
+	def sgetMenuEntry(cls, e):
+		'''Return specific menu entry <e=name>'''
+		for i in cls.menuEntries:
+			if i.getName()==e:
+				return i
+		return False
+
+	@classmethod
+	def getEntryNames(cls):
+		return [i.getName() for i in ProgMenu.menuEntries]
+
 #Parse
 	def parse(self, p=False, *, toFind=None, dontFind=None):
-		'''Returns any functions associated with a flags/assigned/args.
-		Note: If p==True, parse() will return a list of results in order they appear in
-		Menu.allEntries (or in order the entries are created).
-		- if p is True, run all called flags, else just return a list of valid flags
-		- toFind is of type "list", containing MenuEntry objects
-		- dontFind is of type "list", containing strings of flags to avoid'''
+		'''Returns a dict of <function name:returns> while also running the function.
+		- if p is True, run all called flags and return dict, else just return a list of valid flags
+		- toFind is of type "list", containing names of menu entries to find.
+		- dontFind is of type "list", containing names of menu entries to avoid'''
 
-		toReturn=[]
+		#Create a dict of <entries:return values>
+		toReturn={}
+		for e in ProgMenu.menuEntries:
+			toReturn[e.getName()]=None
+
+		#Make sure toFind is populated with entry names
+		if not toFind:
+			toFind=[i.getName() for i in ProgMenu.menuEntries]
 
 		def parseEntry(e):
 			'''Checks if e (of type MenuEntry) was set. Run it if it is found'''
@@ -132,53 +169,40 @@ class Menu():
 
 			return None
 
-		#Populate toFind with all menuEntries if blank
-		if not toFind:
-			toFind=[i for i in Menu.menuEntries]
-
-		#If dontFind has something, loop through toFind and add anything
+		#If dontFind has something, loop through toFind and remove anything
 		#that doesn't match with dontFind to toReturn
 		if dontFind:
-			#Loop through toFind, if there's a match with dontFind, remove it
-			for i, e in enumerate(toFind):
-				if any(i in dontFind for i in e.getLabels()):
-					#if any element in dontFind is in the current label, remove it
-					continue
-				else:
-					toReturn.append(e)
+			#Loop through toFind, if there's a match with dontFind, don't run it
+			for i in dontFind:
+				toFind.remove(i)
 
-		#Else if dontFind is empty, add everything in toFind
-		elif not dontFind:
-			[toReturn.append(i) for i in toFind]
+		#Loop through toReturn and compare with toFind
+		for r in toReturn:
+			#Check if p is set and run the flag if it is
+			if p and r in toFind:
+				ret=parseEntry(self.sgetMenuEntry(r))
+			elif not p:  #Don't run command, but check if flag was called
+				flg=self.sgetMenuEntry(r).getFlg()
+				print(f"[|X]: r: {r}")
+				print(f"[|X]: flg: {flg}")
+				if flg==0:  #Search in flags
+					ret=True if r in self.flags else False
+				elif flg==1:  #Search in assigned
+					ret=True if r in self.assigned else False
+				elif flg==2:  #Search in args
+					ret=True if r in self.args else False
+				elif flg==3:  #Search in flags & assigned
+					ret=True if r in self.flags or r in self.assigned else False
 
-		#Check if p is set and run all called flags if it is
-		if not p:
-			return toReturn
-		elif p:
-			return [parseEntry(e) for e in toReturn]
+			toReturn[r]=ret
 
-	@classmethod
-	def getEntries(cls):
-		toReturn=''
-		for i in Menu.menuEntries:
-			toReturn+=f"{i}\n"
 		return toReturn
 
-	@classmethod
-	def getMenuEntries(cls):
-		return Menu.menuEntries
-
-	@classmethod
-	def setVerbose(cls, verb):
-		'''Sets verbosity. This isn't in the Menu class so the user can set the verbose\
-		command to be whatever through setVerbose(main.findFlag('<whatever>'))'''
-		Menu.VERBOSE=True if verb else False
-		return Menu.VERBOSE
 
 #Flags
 	def findFlag(self, toFind):
 		'''Returns True if any arg is a flag.
-		toFind is of type "list"'''
+		toFind is of type "list" OR a MenuEntry object'''
 		for i in toFind:
 			if i in self.flags:
 				return True
@@ -211,7 +235,7 @@ class Menu():
 		return self.assigned
 
 	def sgetAssigned(self, spec):
-		'''Get a specific value (or at least one if it's a list)'''
+		'''Get a specific value (or at least the first one it finds if it's a list)'''
 		try:
 			#If spec is a list, test if any of the passed values were flagged
 			if type(spec)==list:
@@ -280,15 +304,22 @@ class MenuEntry():
 	- 0=flags
 	- 1=assigned
 	- 2=args
-	- 3=flags&assigned'''
-	def __init__(self, labels, function, flg=0):
+	- 3=flags&assigned
+
+	When setting an entry as 1, this means the function is expecting an argument.
+	The argument is retrieved through the assigned list in Menu.'''
+	entryBlacklist=[]
+	entryWhitelist=[]
+
+	def __init__(self, name, labels, function, flg=0):
+		self.name=name
 		self.labels=labels  #Labels being a list of the flags/args
 		self.function=function
 		self.flg=flg
-		Menu.menuEntries.append(self)
+		ProgMenu.menuEntries.append(self)
 
 	def __str__(self):
-		return f"{self.labels}\t{self.function}"
+		return f"{self.name}\t{self.labels}\t{self.function}"
 
 	def __call__(self, *args, **kwargs):
 		return self.function(*args, **kwargs)
@@ -296,12 +327,25 @@ class MenuEntry():
 	def run(self, *args, **kwargs):
 		return self.function(*args, **kwargs)
 
+	@classmethod
+	def getBlacklist(cls):
+		return cls.entryBlacklist
+	def getWhitelist(cls):
+		return cls.entryWhitelist
+	def addBlacklist(cls, new):
+		cls.entryBlacklist.append(new)
+	def addWhitelist(cls, new):
+		cls.entryWhitelist.append(new)
+
+	def getName(self):
+		return self.name
+	def setName(self, new):
+		self.name=new
+
 	def getLabels(self):
 		return self.labels
-
 	def addLabel(self, new):
 		self.labels.append(new)
-
 	def removeLabel(self, old):
 		self.labels.remove(old)
 
@@ -310,7 +354,6 @@ class MenuEntry():
 
 	def getFlg(self):
 		return self.flg
-
 	def setFlg(self, new):
 		self.flg=new
 
