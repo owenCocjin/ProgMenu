@@ -30,6 +30,7 @@ printFAA()
 from progMenu import menu
 from menuEntries import *
 PARSER=menu.parse(True)  #True means run the functions instead of just returning if the entry was called
+print(f"PARSER: {PARSER}")  #Just so you can see what PARSER is. It's a dictionary of the entry names and what they returned (if called in the cmd line)
 ```
 
 - In another file containing the entries (in this case named `menuEntries.py`):
@@ -39,7 +40,7 @@ def aFunc():
 	print("This is an entry function!")
 	return True
 
-a=MenuEntry('entryName', ['f', "flag"], aFunc, 0)  #help(MenuEntry) for more details)
+a=MenuEntry("entryName", ['f', "flag"], aFunc, 0)  #help(MenuEntry) for more details)
 ```
 
 - Now when you run the main file without using `f` or `flag` as a flag, nothing will happen. But if you do, it prints "This is an entry function!"
