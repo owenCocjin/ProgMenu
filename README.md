@@ -17,8 +17,30 @@ from progMenu import printFAA
 printFAA()
 ```
 
-> the `printFAA` function prints all the passed flags, assigned, and args
+> The `printFAA` function prints all the passed flags, assigned, and args in that order
 
-- A *flag* is: -f or --flag
+- A *flag* is: `-f or --flag`
 - An *assigned* is a flag with an associated arg: `-s 12` or `--seed=12`
 - An *arg* is pretty much anything else: `$ cmd -s <arg> <lonelyArg>`
+
+> You can create MenuEntry objects which can be used to run a function when the script starts:
+
+- In the main file:
+```
+from progMenu import menu
+from menuEntries import *
+PARSER=menu.parse(True)  #True means run the functions instead of just returning if the entry was called
+```
+
+- In another file containing the entries (in this case named `menuEntries.py`):
+```
+from progMenu import MenuEntry
+def aFunc():
+	print("This is an entry function!")
+	return True
+
+a=MenuEntry('entryName', ['f', "flag"], aFunc, 0)  #help(MenuEntry) for more details)
+```
+
+- Now when you run the main file without using `f` or `flag` as a flag, nothing will happen. But if you do, it prints "This is an entry function!"
+
