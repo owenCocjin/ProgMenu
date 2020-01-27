@@ -2,12 +2,9 @@
 '''
 ## Author:	Owen Cocjin
 ## Version:	2.9
-## Date:	10/09/19
+## Date:	21/12/19
 ## Description:	Process cmd line arguments & holds common variables
 ## Notes:
-##	- Added names to MenuEntry classes.
-##	- Changes how parse() works. See help(parse()).
-##	- Fixed parsing: if p==False, return a list that says if flag was called
 
 
 Uncomment and copy this into the main file:
@@ -42,7 +39,7 @@ import sys  #Required!
 |        SETUP        |
 +-------------------'''
 class vprint():
-    '''Verbose printing'''
+    '''Verbose printing.'''
     VERBOSE=False
     def __init__(self, *args, **kwargs):
         if vprint.VERBOSE:
@@ -50,10 +47,14 @@ class vprint():
 
     @classmethod
     def getVerbose(cls):
+        '''Return current VERBOSE value (True means will print).'''
         return cls.VERBOSE
 
     @classmethod
     def setVerbose(cls, new):
+        '''Set VERBOSE value (True means will print).
+Common code used to enable -v option(ensure menu was imported from progMenu!):
+    vprint.setVerbose(menu.findFlag(['v', "verbose"]))'''
         cls.VERBOSE=True if new else False
 
 class ProgMenu():
@@ -306,7 +307,7 @@ class MenuEntry():
 	- 2=args
 	- 3=flags&assigned
 
-	When setting an entry as 1, this means the function is expecting an argument.
+	When setting an entry as 1, this means the function is expecting an argument (Namely whatever is passed as arg to the flag).
 	The argument is retrieved through the assigned list in Menu.'''
 	entryBlacklist=[]
 	entryWhitelist=[]
@@ -357,9 +358,10 @@ class MenuEntry():
 	def setFlg(self, new):
 		self.flg=new
 
-'''----------------+
-|    USER SPACE    |
-+----------------'''
-#User's functions
+#Define certain variables & functions
+def printFAA():
+	print(menu.getFlags())
+	print(menu.getAssigned())
+	print(menu.getArgs())
 
-#User's Variables!
+menu=ProgMenu()
