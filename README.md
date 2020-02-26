@@ -2,8 +2,6 @@
 
 > A lil library to help with cmd line flags and stuff
 
-> YES I KNOW ONE EXISTS I WROTE THIS THEN LEARNED ABOUT argparse
-
 ## Installation
 
 - Clone it and use it like any other library (?)
@@ -44,4 +42,3 @@ a=MenuEntry("entryName", ['f', "flag"], aFunc, 0)  #help(MenuEntry) for more det
 ```
 
 - Now when you run the main file without using `f` or `flag` as a flag, nothing will happen. But if you do, it prints "This is an entry function!"
-
