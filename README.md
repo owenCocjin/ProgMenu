@@ -6,7 +6,9 @@
 
 - Clone or download into a folder
 - Move progMenu.py into the working directory of a project
+
 OR
+
 - Move progMenu.py into python path (most likely "/usr/lib/pythonX.X/dist-packages")
 
 ## Usage
