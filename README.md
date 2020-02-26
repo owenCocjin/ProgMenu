@@ -4,7 +4,10 @@
 
 ## Installation
 
-- Clone it and use it like any other library (?)
+- Clone or download into a folder
+- Move progMenu.py into the working directory of a project
+OR
+- Move progMenu.py into python path (most likely "/usr/lib/pythonX.X/dist-packages")
 
 ## Usage
 
@@ -15,11 +18,12 @@ from progMenu import printFAA
 printFAA()
 ```
 
-> The `printFAA` function prints all the passed flags, assigned, and args in that order
+> The `printFAA()` function prints all the passed flags, assigned, and args in that order
 
 - A *flag* is: `-f or --flag`
 - An *assigned* is a flag with an associated arg: `-s 12` or `--seed=12`
 - An *arg* is pretty much anything else: `$ cmd -s <arg> <lonelyArg>`
+- **NOTE**: Multiple flags passed via one tick will be treated as 2 separate flags, with the last flag getting any assigns (ex. `-fh 'Hello'` is the same as `-f -h 'Hello'`)
 
 > You can create MenuEntry objects which can be used to run a function when the script starts:
 
