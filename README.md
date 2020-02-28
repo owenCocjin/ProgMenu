@@ -13,7 +13,7 @@ OR
 
 ## Usage
 
-### <u>Testing</u>
+### Testing
 
 Run this code as a script to test if it's working:
 
@@ -28,7 +28,7 @@ printFAA()
 - An *arg* is pretty much anything else: `$ cmd -s <arg> <lonelyArg>`
 - <u>**NOTE:**</u> Multiple flags passed via one tick will be treated as 2 separate flags, with the last flag getting any assigns (ex. `-fh 'Hello'` is the same as `-f -h 'Hello'`)
 
-### <u>Main Usage</u>
+### Main Usage
 
 In the main file:
 ```
@@ -51,14 +51,12 @@ a=MenuEntry("entryName", ['f', "flag"], aFunc, 0)  #help(MenuEntry) for more det
 
 Now when you run the main file without using `f` or `flag` as a flag, nothing will happen. But if you do, it prints "This is an entry function!"
 
-### <u>Verbose Printing</u>
+### Verbose Printing
 
 To use verbose printing, simply print like normal, but use the function "vprint" instead of "print" (And make sure the verbose flag was set).
 To use verbose printing in other files, you MUST make sure you import vprint in each file (you don't need to set verbosity anywhere other than main), otherwise Python will complain that vprint wasn't defined.
+
 Ex:
-
----
-
 - In main file (main.py):
 ```
 from progMenu import menu, vprint  #menu is required to catch flags
