@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
 ## Version:	3.0
-## Date:	27/02/120
+## Date:	28/02/120
 ## Description:	Process cmd line arguments & holds common variables
 ## Notes:
 ##	- Removed unnecessary docstring (in README.md now)
 ##	- Removed User Spaces (A user souldn't be able to add to this file!)
 ##	- Re-wrote parse; Much cleaner & coherent!
+##	- Fixed issue with passing a single dash ('-') through cmdline; Dash caused crash
 import sys  #Required!
 
 '''-------------------+
