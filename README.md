@@ -1,6 +1,6 @@
 # ProgMenu
 
-> A lil library to help with cmd line flags and stuff
+> A lil library to help with cmd line flags and stuff (stuff being verbose printing)
 
 ## Installation
 
@@ -17,7 +17,7 @@ OR
 Testing
 =======
 
-> Add this code to the main file to test if it's working:
+Run this code as a script to test if it's working:
 
 ```
 from progMenu import printFAA
@@ -31,21 +31,20 @@ printFAA()
 - An *arg* is pretty much anything else: `$ cmd -s <arg> <lonelyArg>`
 - **NOTE**: Multiple flags passed via one tick will be treated as 2 separate flags, with the last flag getting any assigns (ex. `-fh 'Hello'` is the same as `-f -h 'Hello'`)
 
-> You can create MenuEntry objects which can be used to run a function when the script starts:
-
 
 Main usage
 ==========
 
-- In the main file:
+In the main file:
 ```
-from progMenu import menu
+from progMenu import menu, vprint
 from menuEntries import *
-PARSER=menu.parse(True)  #True means run the functions instead of just returning if the entry was called
-print(f"PARSER: {PARSER}")  #Just so you can see what PARSER is. It's a dictionary of the entry names and what they returned (if called in the cmd line)
+PARSER=menu.parse(True)  #True means run the functions instead of just returning if the entry was called.
+vprint.setVerbose(menu.findFlag(['v', "verbose"]))  #Sets verbose printing with 'v' and "verbose" as flags.
+print(f"PARSER: {PARSER}")  #Just so you can see what PARSER is. It's a dictionary of the entry names and what they returned (if called in the cmd line).
 ```
 
-- In another file containing the entries (in this case named `menuEntries.py`):
+In another file containing the entries (in this case named `menuEntries.py`):
 ```
 from progMenu import MenuEntry
 def aFunc():
@@ -55,4 +54,34 @@ def aFunc():
 a=MenuEntry("entryName", ['f', "flag"], aFunc, 0)  #help(MenuEntry) for more details)
 ```
 
-- Now when you run the main file without using `f` or `flag` as a flag, nothing will happen. But if you do, it prints "This is an entry function!"
+Now when you run the main file without using `f` or `flag` as a flag, nothing will happen. But if you do, it prints "This is an entry function!"
+
+To use verbose printing, simply print like normal, but use the function "vprint" instead of "print" (And make sure the verbose flag was set).
+To use verbose printing in other files, you MUST make sure you import vprint in each file (you don't need to set verbosity anywhere other than main), otherwise Python will complain that vprint wasn't defined.
+Ex:
+---
+- In main file (main.py):
+```
+from progMenu import menu, vprint  #menu is required to catch flags
+import verboseTest
+vprint.setVerbose(menu.findFlag(['v', "verbose"]))  #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: vprint.setVerbose(True)
+verboseTest.testFunc()
+```
+
+- In another file (verboseTest.py):
+```
+from progMenu import vprint
+def testFunc():
+	'''Prints normally and with verbose'''
+	print("This is a normal print from testFunc!")
+	vprint("This is verbose print from testFunc!")
+```
+
+- Now when the main file is run without '-v', only the normal print will work. When it's run with '-v', both print statements will print:
+```
+$ python main.py
+This is a normal print from testFunc!
+$ python main.py -v
+This is a normal print from testFunc!
+This is verbose print from testFunc!
+```
