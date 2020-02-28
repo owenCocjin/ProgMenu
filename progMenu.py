@@ -1,39 +1,13 @@
 #!/usr/bin/python3
-'''
 ## Author:	Owen Cocjin
-## Version:	2.9
-## Date:	21/12/19
+## Version:	3.0
+## Date:	27/02/120
 ## Description:	Process cmd line arguments & holds common variables
 ## Notes:
-
-
-Uncomment and copy this into the main file:
-	>
-	from menu import *
-	menu=ProgMenu()  #Set a ProgMenu object
-	vprint.setVerbose(menu.findFlag(['v', "verbose"]))  #Set verbosity setting
-	<
-
-For menu entries, it's easiest to make a seperate python file (menuEntries.py)\
-and fill that with Entry objects. Uncomment and copy this into menuEntries.py:
-	> from menu import MenuEntry <
-
-And this to the main file:
-	> import menuEntries <
-
-For all the functionality (i.e. verbose & entries) uncomment and copy this into
-the main file
-	>
-	from menu import *
-	import menuEntries
-	menu=ProgMenu()  #Set a ProgMenu object
-	PARSER=menu.parse(True)  #Run any valid flags that are passed and save them
-	vprint.setVerbose(menu.findFlag(['v', "verbose"]))  #Set verbosity setting
-	<
-'''
+##	- Removed unnecessary docstring (in README.md now)
+##	- Removed User Spaces (A user souldn't be able to add to this file!)
+##	- Re-wrote parse; Much cleaner & coherent!
 import sys  #Required!
-#--------User's imports--------#
-#import user-required libraries
 
 '''-------------------+
 |        SETUP        |
@@ -72,7 +46,7 @@ class ProgMenu():
 		menu_args=sys.argv[1:]  #Remove first arg
 		for i, n in enumerate(menu_args):
 			#If current arg starts with '-', it's a flag
-			if n[0]=='-':
+			if n[0]=='-' and len(n)>=2:
 				#If current arg starts with '--', its it's own flag
 				if n[1]=='-':
 					if '=' in n:
@@ -130,74 +104,50 @@ class ProgMenu():
 		return [i.getName() for i in ProgMenu.menuEntries]
 
 #Parse
-	def parse(self, p=False, *, toFind=None, dontFind=None):
-		'''Returns a dict of <function name:returns> while also running the function.
-		- if p is True, run all called flags and return dict, else just return a list of valid flags
-		- toFind is of type "list", containing names of menu entries to find.
-		- dontFind is of type "list", containing names of menu entries to avoid'''
+	def parse(self, p=False, *, strict=False):
+		'''Returns a dict of <entry name:returns> while also running the entry (if p is set).
+	- If p is True, run all called flags and return dict of {entry name:return value/None}.
+	- If p is False, return a dict of {entry name:True/None}.
+	- If strict is True, throw error if an assigned entry wasn't passed an arg, else just ignore it'''
+		entries={}
+		toRet={}
+		for e in self.getMenuEntries():  #Set all entries to False (default)
+			entries[e]=None
 
-		#Create a dict of <entries:return values>
-		toReturn={}
-		for e in ProgMenu.menuEntries:
-			toReturn[e.getName()]=None
+		#if p isn't set, loop through all entries, setting bool when specified
+		for r in entries:
+			curFlg=r.getFlg()
+			if curFlg==0 or curFlg==2:  #Look through flags
+				if any([i for i in r.getLabels() if i in self.flags]):
+					if p:
+						entries[r]=r()
+					else:
+						entries[r]=True
 
-		#Make sure toFind is populated with entry names
-		if not toFind:
-			toFind=[i.getName() for i in ProgMenu.menuEntries]
+			if curFlg==1 or curFlg==2:  #Look through assigned
+				labels=r.getLabels()
+				val=None
 
-		def parseEntry(e):
-			'''Checks if e (of type MenuEntry) was set. Run it if it is found'''
-			if e.getFlg()==0:
-				if any(i in self.flags for i in e.getLabels()):
-					return e()
-
-			elif e.getFlg()==1:
+				#Get assigned value
 				for i in self.assigned:
-					if i in e.getLabels():
-						return e(self.assigned[i])
+					if i in labels:
+						val=self.assigned[i]
+						break
+				#Strict check
+				if val==None and strict and curFlg==1:
+					raise AssignedError(f"No argument was given for assigned '{r.getName()}'!")
 
-			elif e.getFlg()==2:
-				if any(i in self.args for i in e.getLabels()):
-					return e()
+				if any([i for i in r.getLabels() if i in self.assigned]):
+					if p:
+						entries[r]=r(val)
+					else:
+						entries[r]=True
 
-			elif e.getFlg()==3:
-				for i in self.assigned:
-					if i in e.getLabels():
-						return e(self.assigned[i])
+		#Get names of entries instead of entries themselves
+		for i in entries:
+			toRet[i.getName()]=entries[i]
 
-				if any(i in self.flags for i in e.getLabels()):
-					return e()
-
-			return None
-
-		#If dontFind has something, loop through toFind and remove anything
-		#that doesn't match with dontFind to toReturn
-		if dontFind:
-			#Loop through toFind, if there's a match with dontFind, don't run it
-			for i in dontFind:
-				toFind.remove(i)
-
-		#Loop through toReturn and compare with toFind
-		for r in toReturn:
-			#Check if p is set and run the flag if it is
-			if p and r in toFind:
-				ret=parseEntry(self.sgetMenuEntry(r))
-			elif not p:  #Don't run command, but check if flag was called
-				flg=self.sgetMenuEntry(r).getFlg()
-				print(f"[|X]: r: {r}")
-				print(f"[|X]: flg: {flg}")
-				if flg==0:  #Search in flags
-					ret=True if r in self.flags else False
-				elif flg==1:  #Search in assigned
-					ret=True if r in self.assigned else False
-				elif flg==2:  #Search in args
-					ret=True if r in self.args else False
-				elif flg==3:  #Search in flags & assigned
-					ret=True if r in self.flags or r in self.assigned else False
-
-			toReturn[r]=ret
-
-		return toReturn
+		return toRet
 
 
 #Flags
@@ -301,16 +251,15 @@ class ProgMenu():
 
 class MenuEntry():
 	'''Menu entry class.
+name: Entry's name. This is how it will be referenced through the PARSER dictionary.
+labels: The flags that will trigger this entry. NOTE: If multiple entries have the same flags, all will trigger!
+function: The function that will run when this entry is triggered. If you just want to determine if the flag is caught, use: 'lambda: True' (without quotes).
 	flg status:
-	- 0=flags
-	- 1=assigned
-	- 2=args
-	- 3=flags&assigned
+	- 0=flags (No arguments will be accepted)
+	- 1=assigned (Exactly 1 positional argument is expected)
+	- 2=flags&assigned (Exactly 1 keyword argument is expected)
 
-	When setting an entry as 1, this means the function is expecting an argument (Namely whatever is passed as arg to the flag).
-	The argument is retrieved through the assigned list in Menu.'''
-	entryBlacklist=[]
-	entryWhitelist=[]
+	'''
 
 	def __init__(self, name, labels, function, flg=0):
 		self.name=name
@@ -320,23 +269,13 @@ class MenuEntry():
 		ProgMenu.menuEntries.append(self)
 
 	def __str__(self):
-		return f"{self.name}\t{self.labels}\t{self.function}"
+		return f"{self.name}"
 
 	def __call__(self, *args, **kwargs):
 		return self.function(*args, **kwargs)
 
 	def run(self, *args, **kwargs):
 		return self.function(*args, **kwargs)
-
-	@classmethod
-	def getBlacklist(cls):
-		return cls.entryBlacklist
-	def getWhitelist(cls):
-		return cls.entryWhitelist
-	def addBlacklist(cls, new):
-		cls.entryBlacklist.append(new)
-	def addWhitelist(cls, new):
-		cls.entryWhitelist.append(new)
 
 	def getName(self):
 		return self.name
@@ -360,8 +299,13 @@ class MenuEntry():
 
 #Define certain variables & functions
 def printFAA():
+	'''Prints all found flags, assigned, and arguments in that order'''
 	print(menu.getFlags())
 	print(menu.getAssigned())
 	print(menu.getArgs())
 
 menu=ProgMenu()
+
+class AssignedError(Exception):
+	'''An assigned entry (flg=1) was passed without an argument'''
+	pass
