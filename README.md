@@ -11,6 +11,8 @@ OR
 
 - Move progMenu.py into python path (most likely "/usr/lib/pythonX.X/dist-packages")
 
+<br/>
+
 ## Usage
 
 ### Testing
@@ -27,6 +29,8 @@ printFAA()
 - An *assigned* is a flag with an associated arg: `-s 12` or `--seed=12`
 - An *arg* is pretty much anything else: `$ cmd -s <arg> <lonelyArg>`
 - <u>**NOTE:**</u> Multiple flags passed via one tick will be treated as 2 separate flags, with the last flag getting any assigns (ex. `-fh 'Hello'` is the same as `-f -h 'Hello'`)
+
+<br/>
 
 ### Main Usage
 
@@ -50,6 +54,8 @@ a=MenuEntry("entryName", ['f', "flag"], aFunc, 0)  #help(MenuEntry) for more det
 ```
 
 Now when you run the main file without using `f` or `flag` as a flag, nothing will happen. But if you do, it prints "This is an entry function!"
+
+<br/>
 
 ### Verbose Printing
 
