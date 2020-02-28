@@ -13,7 +13,7 @@ OR
 
 ## Usage
 
-### Testing
+### <u>Testing</u>
 
 Run this code as a script to test if it's working:
 
@@ -26,10 +26,9 @@ printFAA()
 - A *flag* is: `-f or --flag`
 - An *assigned* is a flag with an associated arg: `-s 12` or `--seed=12`
 - An *arg* is pretty much anything else: `$ cmd -s <arg> <lonelyArg>`
-- __**NOTE:**__ Multiple flags passed via one tick will be treated as 2 separate flags, with the last flag getting any assigns (ex. `-fh 'Hello'` is the same as `-f -h 'Hello'`)
+- <u>**NOTE:**</u> Multiple flags passed via one tick will be treated as 2 separate flags, with the last flag getting any assigns (ex. `-fh 'Hello'` is the same as `-f -h 'Hello'`)
 
-<br/>
-### Main Usage
+### <u>Main Usage</u>
 
 In the main file:
 ```
@@ -52,8 +51,7 @@ a=MenuEntry("entryName", ['f', "flag"], aFunc, 0)  #help(MenuEntry) for more det
 
 Now when you run the main file without using `f` or `flag` as a flag, nothing will happen. But if you do, it prints "This is an entry function!"
 
-<br/>
-### Verbose Printing
+### <u>Verbose Printing</u>
 
 To use verbose printing, simply print like normal, but use the function "vprint" instead of "print" (And make sure the verbose flag was set).
 To use verbose printing in other files, you MUST make sure you import vprint in each file (you don't need to set verbosity anywhere other than main), otherwise Python will complain that vprint wasn't defined.
@@ -78,8 +76,7 @@ def testFunc():
 	vprint("This is verbose print from testFunc!")
 ```
 
-<br/>
-Now when the main file is run without '-v', only the normal print will work. When it's run with '-v', both print statements will print:
+- Now when the main file is run without '-v', only the normal print will work. When it's run with '-v', both print statements will print:
 ```
 $ python main.py
 This is a normal print from testFunc!
