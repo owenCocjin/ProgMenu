@@ -13,6 +13,10 @@ OR
 
 ## Usage
 
+
+Testing
+=======
+
 > Add this code to the main file to test if it's working:
 
 ```
@@ -28,6 +32,10 @@ printFAA()
 - **NOTE**: Multiple flags passed via one tick will be treated as 2 separate flags, with the last flag getting any assigns (ex. `-fh 'Hello'` is the same as `-f -h 'Hello'`)
 
 > You can create MenuEntry objects which can be used to run a function when the script starts:
+
+
+Main usage
+==========
 
 - In the main file:
 ```
