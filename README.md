@@ -14,26 +14,23 @@ OR
 ## Usage
 
 
-Testing
-=======
+**Testing**
 
 Run this code as a script to test if it's working:
 
 ```
 from progMenu import printFAA
 printFAA()
+#Prints all the passed flags, assigned, and args in that order
 ```
-
-> The `printFAA()` function prints all the passed flags, assigned, and args in that order
 
 - A *flag* is: `-f or --flag`
 - An *assigned* is a flag with an associated arg: `-s 12` or `--seed=12`
 - An *arg* is pretty much anything else: `$ cmd -s <arg> <lonelyArg>`
-- **NOTE**: Multiple flags passed via one tick will be treated as 2 separate flags, with the last flag getting any assigns (ex. `-fh 'Hello'` is the same as `-f -h 'Hello'`)
+- __**NOTE:**__ Multiple flags passed via one tick will be treated as 2 separate flags, with the last flag getting any assigns (ex. `-fh 'Hello'` is the same as `-f -h 'Hello'`)
 
 
-Main usage
-==========
+**Main usage**
 
 In the main file:
 ```
