@@ -2,7 +2,7 @@
 
 > A lil library to help with cmd line flags and stuff (stuff being verbose printing)
 
-<br/>
+***
 
 ## Installation
 
@@ -11,7 +11,7 @@
 
 OR
 
-- Move progMenu.py into python path (most likely "/usr/lib/pythonX.X/dist-packages")
+- Move progMenu.py (__NOT__ the while repo) into python path (most likely "/usr/lib/pythonX.X/dist-packages")
 
 <br/>
 
@@ -65,6 +65,25 @@ To use verbose printing, simply print like normal, but use the function "vprint"
 To use verbose printing in other files, you MUST make sure you import vprint in each file (you don't need to set verbosity anywhere other than main), otherwise Python will complain that vprint wasn't defined.
 
 Ex:
+
+#### Using main:
+- In main file (main.py):
+```
+from progMenu import menu, vprint
+vprint.setVerbose(menu.findFlag(['v' "verbose"])) #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: vprint.setVerbose(True)
+print("This is without verbose!")
+vprint("This is WITH verbose!")
+```
+- Now run the file with `-v` or `--verbose`:
+```
+$ python ./main.py
+This is without verbose!
+$python ./main.py -v
+This is without verbose!
+This is WITH verbose!
+```
+
+#### Using external files:
 - In main file (main.py):
 ```
 from progMenu import menu, vprint  #menu is required to catch flags
@@ -72,7 +91,6 @@ import verboseTest
 vprint.setVerbose(menu.findFlag(['v', "verbose"]))  #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: vprint.setVerbose(True)
 verboseTest.testFunc()
 ```
-
 - In another file (verboseTest.py):
 ```
 from progMenu import vprint
@@ -81,7 +99,6 @@ def testFunc():
 	print("This is a normal print from testFunc!")
 	vprint("This is verbose print from testFunc!")
 ```
-
 - Now when the main file is run without '-v', only the normal print will work. When it's run with '-v', both print statements will print:
 ```
 $ python main.py
