@@ -16,7 +16,7 @@ class vprint():
     PREFIX=''
     def __init__(self, *args, **kwargs):
         if vprint.VERBOSE:
-			print(vprint.PREFIX, end='')
+            print(vprint.PREFIX, end='')
             print(*args, **kwargs)
 
     @classmethod
