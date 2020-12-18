@@ -13,7 +13,15 @@
 
 OR
 
-- Move progMenu.py (__NOT__ the whole repo) into python path (most likely "/usr/lib/pythonX.X/dist-packages")
+- Symlink the repo to your Python path (probably /usr/lib/pythonX.X):
+#Assuming you're in the repo's parent directory
+#Replace pythonX.X with your Python version
+ln -fs /usr/lib/pythonX.X/progmenu ./ProgMenu
+```
+
+### Bash
+
+- There's nothing in here right now, so...
 
 <br/>
 
@@ -24,7 +32,7 @@ OR
 Run this code as a script to test if it's working:
 
 ```
-from progMenu import printFAA
+from progmenu import printFAA
 printFAA()
 #Prints all the passed flags, assigned, and args in that order
 ```
