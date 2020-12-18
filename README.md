@@ -17,7 +17,7 @@ OR
 ```
 #Assuming you're in the repo's directory
 #Replace pythonX.X with your Python version
-ln -fs ./progmenu.py /usr/lib/pythonX.X/progmenu.py
+ln -fs ./Python/progmenu.py /usr/lib/pythonX.X/progmenu.py
 ```
 
 ### Bash
