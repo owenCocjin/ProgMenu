@@ -13,7 +13,7 @@ import sys  #Required!
 class vprint():
     '''Verbose printing.'''
     VERBOSE=False
-	PREFIX=''
+    PREFIX=''
     def __init__(self, *args, **kwargs):
         if vprint.VERBOSE:
 			print(vprint.PREFIX, end='')
@@ -31,17 +31,17 @@ Common code used to enable -v option(ensure menu was imported from progMenu!):
     vprint.setVerbose(menu.findFlag(['v', "verbose"]))'''
         cls.VERBOSE=True if new else False
 
-	@classmethod
-	def setPrefix(cls, p, w=None):
-		'''Sets prefix to printing.
-			- p=prefix as a str
-			- w=wrapping can be either (, [, <, or {'''
-		wraps={'{':'}', '(':')', '[':']', '<':'>'}
-		toRet=p
-		if w in wraps.keys():
-			cls.PREFIX=f"{w}{toRet}{wraps[w]}"
-		else:
-			cls.PREFIX=p
+    @classmethod
+    def setPrefix(cls, p, w=None):
+        '''Sets prefix to printing.
+            - p=prefix as a str
+            - w=wrapping can be either (, [, <, or {'''
+        wraps={'{':'}', '(':')', '[':']', '<':'>'}
+        toRet=p
+        if w in wraps.keys():
+            cls.PREFIX=f"{w}{toRet}{wraps[w]}"
+        else:
+            cls.PREFIX=p
 
 
 class ProgMenu():
