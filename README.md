@@ -13,10 +13,11 @@
 
 OR
 
-- Symlink the repo to your Python path (probably /usr/lib/pythonX.X):
-#Assuming you're in the repo's parent directory
+- Symlink `progmenu.py` to your Python path (probably /usr/lib/pythonX.X):
+```
+#Assuming you're in the repo's directory
 #Replace pythonX.X with your Python version
-ln -fs /usr/lib/pythonX.X/progmenu ./ProgMenu
+ln -fs ./progmenu.py /usr/lib/pythonX.X/progmenu.py
 ```
 
 ### Bash
@@ -48,7 +49,7 @@ printFAA()
 
 In the main file:
 ```
-from progMenu import menu, vprint
+from progmenu import menu, vprint
 from menuEntries import *
 PARSER=menu.parse(True)  #True means run the functions instead of just returning if the entry was called.
 vprint.setVerbose(menu.findFlag(['v', "verbose"]))  #Sets verbose printing with 'v' and "verbose" as flags.
@@ -57,7 +58,7 @@ print(f"PARSER: {PARSER}")  #Just so you can see what PARSER is. It's a dictiona
 
 In another file containing the entries (in this case named `menuEntries.py`):
 ```
-from progMenu import MenuEntry
+from progmenu import MenuEntry
 def aFunc():
 	print("This is an entry function!")
 	return True
@@ -79,7 +80,7 @@ Ex:
 #### Using main:
 - In main file (main.py):
 ```
-from progMenu import menu, vprint
+from progmenu import menu, vprint
 vprint.setVerbose(menu.findFlag(['v' "verbose"])) #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: vprint.setVerbose(True)
 print("This is without verbose!")
 vprint("This is WITH verbose!")
