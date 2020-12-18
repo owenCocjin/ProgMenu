@@ -13,12 +13,7 @@
 
 OR
 
-- Symlink `progmenu.py` to your Python path (probably /usr/lib/pythonX.X):
-```
-#Assuming you're in the repo's directory
-#Replace pythonX.X with your Python version
-ln -fs ./Python/progmenu.py /usr/lib/pythonX.X/progmenu.py
-```
+- Copy Python/progmenu.py to your Python path (probably /usr/lib/pythonX.X ; Check your path with `python -c "import sys; print(sys.path)"`)
 
 ### Bash
 

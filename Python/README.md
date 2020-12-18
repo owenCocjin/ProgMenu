@@ -6,12 +6,18 @@
 
 ## Installation
 
+### Python
+
 - Clone or download into a folder
 - Move progMenu.py into the working directory of a project
 
 OR
 
-- Move progMenu.py (__NOT__ the while repo) into python path (most likely "/usr/lib/pythonX.X/dist-packages")
+- Copy Python/progmenu.py to your Python path (probably /usr/lib/pythonX.X ; Check your path with `python -c "import sys; print(sys.path)"`)
+
+### Bash
+
+- There's nothing in here right now, so...
 
 <br/>
 
@@ -22,7 +28,7 @@ OR
 Run this code as a script to test if it's working:
 
 ```
-from progMenu import printFAA
+from progmenu import printFAA
 printFAA()
 #Prints all the passed flags, assigned, and args in that order
 ```
@@ -38,7 +44,7 @@ printFAA()
 
 In the main file:
 ```
-from progMenu import menu, vprint
+from progmenu import menu, vprint
 from menuEntries import *
 PARSER=menu.parse(True)  #True means run the functions instead of just returning if the entry was called.
 vprint.setVerbose(menu.findFlag(['v', "verbose"]))  #Sets verbose printing with 'v' and "verbose" as flags.
@@ -47,7 +53,7 @@ print(f"PARSER: {PARSER}")  #Just so you can see what PARSER is. It's a dictiona
 
 In another file containing the entries (in this case named `menuEntries.py`):
 ```
-from progMenu import MenuEntry
+from progmenu import MenuEntry
 def aFunc():
 	print("This is an entry function!")
 	return True
@@ -69,7 +75,7 @@ Ex:
 #### Using main:
 - In main file (main.py):
 ```
-from progMenu import menu, vprint
+from progmenu import menu, vprint
 vprint.setVerbose(menu.findFlag(['v' "verbose"])) #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: vprint.setVerbose(True)
 print("This is without verbose!")
 vprint("This is WITH verbose!")
