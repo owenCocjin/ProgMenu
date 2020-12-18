@@ -32,16 +32,17 @@ Common code used to enable -v option(ensure menu was imported from progMenu!):
         cls.VERBOSE=True if new else False
 
     @classmethod
-    def setPrefix(cls, p, w=None):
+    def setPrefix(cls, p, w=None, s=' '):
         '''Sets prefix to printing.
             - p=prefix as a str
-            - w=wrapping can be either (, [, <, or {'''
+            - w=wrapping can be either (, [, <, or {
+            - s=suffix of statement, default space'''
         wraps={'{':'}', '(':')', '[':']', '<':'>'}
         toRet=p
         if w in wraps.keys():
-            cls.PREFIX=f"{w}{toRet}{wraps[w]}"
+            cls.PREFIX=f"{w}{toRet}{wraps[w]}{s}"
         else:
-            cls.PREFIX=p
+            cls.PREFIX=f"{p}{s}"
 
 
 class ProgMenu():
