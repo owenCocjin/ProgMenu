@@ -1,13 +1,10 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	3.0
-## Date:	28/02/120
+## Version:	3.1
+## Date:	2020.12.18
 ## Description:	Process cmd line arguments & holds common variables
 ## Notes:
-##	- Removed unnecessary docstring (in README.md now)
-##	- Removed User Spaces (A user souldn't be able to add to this file!)
-##	- Re-wrote parse; Much cleaner & coherent!
-##	- Fixed issue with passing a single dash ('-') through cmdline; Dash caused crash
+##    - Added PREFIX to verbose
 import sys  #Required!
 
 '''-------------------+
@@ -16,6 +13,7 @@ import sys  #Required!
 class vprint():
     '''Verbose printing.'''
     VERBOSE=False
+	PREFIX=''
     def __init__(self, *args, **kwargs):
         if vprint.VERBOSE:
             print(*args, **kwargs)
@@ -31,6 +29,19 @@ class vprint():
 Common code used to enable -v option(ensure menu was imported from progMenu!):
     vprint.setVerbose(menu.findFlag(['v', "verbose"]))'''
         cls.VERBOSE=True if new else False
+
+	@classmethod
+	def setPrefix(cls, p, w=None):
+		'''Sets prefix to printing.
+			- p=prefix as a str
+			- w=wrapping can be either (, [, <, or {'''
+		wraps={'{':'}', '(':')', '[':']', '<':'>'}
+		toRet=p
+		if w in wraps.keys():
+			cls.PREFIX=f"{w}{toRet}{wraps[w]}"
+		else:
+			cls.PREFIX=p
+
 
 class ProgMenu():
 	menuEntries=[]  #Class-wide list of all menu entries
@@ -305,7 +316,7 @@ def printFAA():
 	print(menu.getAssigned())
 	print(menu.getArgs())
 
-menu=ProgMenu()
+menu=ProgMenu()  #Create a global ProgMenu instance
 
 class AssignedError(Exception):
 	'''An assigned entry (flg=1) was passed without an argument'''
