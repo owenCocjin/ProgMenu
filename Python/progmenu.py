@@ -4,47 +4,12 @@
 ## Date:	2020.12.18
 ## Description:	Process cmd line arguments & holds common variables
 ## Notes:
-##    - Added PREFIX to verbose
+##    - Moved verbose to ProgMenu. It is now a function that returns a function based on given parameters
 import sys  #Required!
 
 '''-------------------+
 |        SETUP        |
 +-------------------'''
-class vprint():
-    '''Verbose printing.'''
-    VERBOSE=False
-    PREFIX=''
-    def __init__(self, *args, **kwargs):
-        if vprint.VERBOSE:
-            print(vprint.PREFIX, end='')
-            print(*args, **kwargs)
-
-    @classmethod
-    def getVerbose(cls):
-        '''Return current VERBOSE value (True means will print).'''
-        return cls.VERBOSE
-
-    @classmethod
-    def setVerbose(cls, new):
-        '''Set VERBOSE value (True means will print).
-Common code used to enable -v option(ensure menu was imported from progMenu!):
-    vprint.setVerbose(menu.findFlag(['v', "verbose"]))'''
-        cls.VERBOSE=True if new else False
-
-    @classmethod
-    def setPrefix(cls, p, w=None, s=' '):
-        '''Sets prefix to printing.
-            - p=prefix as a str
-            - w=wrapping can be either (, [, <, or {
-            - s=suffix of statement, default space'''
-        wraps={'{':'}', '(':')', '[':']', '<':'>'}
-        toRet=p
-        if w in wraps.keys():
-            cls.PREFIX=f"{w}{toRet}{wraps[w]}{s}"
-        else:
-            cls.PREFIX=f"{p}{s}"
-
-
 class ProgMenu():
 	menuEntries=[]  #Class-wide list of all menu entries
 
@@ -262,6 +227,24 @@ class ProgMenu():
 		isAssigned=True if len(self.assigned)==0 else False
 		isArgs=True if len(self.args)==0 else False
 		return isFlags, isAssigned, isArgs
+
+#Verbose
+	def verboseSetup(self, verbose, prefix=None):
+		'''Used to setup verbose printing'''
+		def vprint(*args, **kwargs):
+			'''Verbose printing with a prefix'''
+			print(prefix, end='')
+			print(*args, **kwargs)
+		def vprintNoPrefix(*args, **kwargs):
+			'''Verbose printing without a prefix'''
+			print(*args, **kwargs)
+
+		if verbose and prefix!=None:
+			return vprint
+		elif verbose and not prefix:
+			return vprintNoPrefix
+		else:  #Returns a useless function
+			return lambda *_, **a: None
 
 class MenuEntry():
 	'''Menu entry class.
