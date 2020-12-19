@@ -90,15 +90,17 @@ This is WITH verbose!
 ```
 
 #### Using external files:
+> TLDR; You only need to import verbosity in the files where you're calling it literally
+
 - In main file (main.py):
 ```
-from progmenu import menu  #menu is required to catch flags
 import verboseTest
-vprint=menu.verboseSetup(menu.findFlag(['v', "verbose"]))  #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: menu.verboseSetup(True)
 verboseTest.testFunc()
 ```
 - In another file (verboseTest.py):
 ```
+from progmenu import menu  #menu is required to catch flags
+vprint=menu.verboseSetup(menu.findFlag(['v', "verbose"]))  #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: menu.verboseSetup(True)
 def testFunc():
 	'''Prints normally and with verbose'''
 	print("This is a normal print from testFunc!")
