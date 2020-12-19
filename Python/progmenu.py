@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	3.1
+## Version:	3.2
 ## Date:	2020.12.18
 ## Description:	Process cmd line arguments & holds common variables
 ## Notes:
