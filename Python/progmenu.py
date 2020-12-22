@@ -114,7 +114,9 @@ class ProgMenu():
 						break
 				#Strict check
 				if val==None and strict and curFlg==1:
-					raise AssignedError(f"No argument was given for assigned '{r.getName()}'!")
+					print(f"AssignedError: No argument was given for assigned '{r.getName()}'!")
+					exit(1)
+					#raise AssignedError(f"No argument was given for assigned '{r.getName()}'!")
 
 				if any([i for i in r.getLabels() if i in self.assigned]):
 					if p:
@@ -303,6 +305,8 @@ def printFAA():
 
 menu=ProgMenu()  #Create a global ProgMenu instance
 
+"""
 class AssignedError(Exception):
 	'''An assigned entry (flg=1) was passed without an argument'''
 	pass
+"""
