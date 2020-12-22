@@ -41,13 +41,13 @@ printFAA()
 <br/>
 
 ### Main Usage
+> This is a super basic example! Checkout the Examples in the Python directory for more options
 
 In the main file:
 ```
 from progmenu import menu
 from menuentries import *
-PARSER=menu.parse(True)  #True means run the functions instead of just returning if the entry was called.
-vprint=menu.verboseSetup(menu.findFlag(['v', "verbose"]))  #Sets verbose printing with 'v' and "verbose" as flags.
+PARSER=menu.parse(True)  #True means run the functions instead of just returning True/None if the entry was called.
 print(f"PARSER: {PARSER}")  #Just so you can see what PARSER is. It's a dictionary of the entry names and what they returned (if called in the cmd line).
 ```
 
