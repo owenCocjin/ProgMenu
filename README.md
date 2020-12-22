@@ -44,10 +44,10 @@ printFAA()
 
 In the main file:
 ```
-from progmenu import menu, vprint
+from progmenu import menu
 from menuEntries import *
 PARSER=menu.parse(True)  #True means run the functions instead of just returning if the entry was called.
-vprint.setVerbose(menu.findFlag(['v', "verbose"]))  #Sets verbose printing with 'v' and "verbose" as flags.
+vprint=menu.verboseSetup(menu.findFlag(['v', "verbose"]))  #Sets verbose printing with 'v' and "verbose" as flags.
 print(f"PARSER: {PARSER}")  #Just so you can see what PARSER is. It's a dictionary of the entry names and what they returned (if called in the cmd line).
 ```
 
