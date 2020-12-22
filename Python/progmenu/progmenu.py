@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	3.2
-## Date:	2020.12.18
-## Description:	Process cmd line arguments & holds common variables
+## Version:	4.0
+## Date:	2020.12.22
+## Description:	Process cmd line arguments
 ## Notes:
-##    - Moved verbose to ProgMenu. It is now a function that returns a function based on given parameters
+##    - Moved MenuEntry class to its own module
+##    - Updated parser and strict
+##    - Updated sgetMenuEntry to look for name or label
 import sys  #Required!
 
 '''-------------------+
@@ -54,7 +56,7 @@ class ProgMenu():
 				self.args.append(n)
 
 	def __str__(self):
-		return f"flags:\t\t{self.flags}\nassigned:\t{self.assigned}\nargs:\t\t{self.args}"
+		return f"flags:    {self.flags}\nassigned: {self.assigned}\nargs:     {self.args}"
 
 	@classmethod
 	def listNames(cls):
@@ -68,13 +70,13 @@ class ProgMenu():
 
 	@classmethod
 	def getMenuEntries(cls):
-		return ProgMenu.menuEntries
+		return cls.menuEntries
 
 	@classmethod
 	def sgetMenuEntry(cls, e):
-		'''Return specific menu entry <e=name>'''
+		'''Return specific menu entry by name or entries labels.'''
 		for i in cls.menuEntries:
-			if i.getName()==e:
+			if i.getName()==e or (e in i.getLabels()):
 				return i
 		return False
 
@@ -86,43 +88,77 @@ class ProgMenu():
 	def parse(self, p=False, *, strict=False):
 		'''Returns a dict of <entry name:returns> while also running the entry (if p is set).
 	- If p is True, run all called flags and return dict of {entry name:return value/None}.
-	- If p is False, return a dict of {entry name:True/None}.
-	- If strict is True, throw error if an assigned entry wasn't passed an arg, else just ignore it'''
-		entries={}
+	- If p is False, return a dict of {entry name:True/False}, essentially making everything a flag 0.
+	- If strict is True, throws error if an assigned entry wasn't passed an arg,
+		plain flag was passed an arg,
+		or non-entry flag was passed.'''
+		entries={}  #Dict of {MenuEntry:return}
 		toRet={}
+
+		def einm(entryLabels, menuList):
+			'''Returns True if any entryLabels are in the given menuList'''
+			return any([True for i in entryLabels if i in menuList])
+
+		def ftom(flag):
+			'''Converts a given flag to a mode based on what's passed in command line:
+				-1=Flag not found (flag isn't found in entries)
+				 0=Flag only (equivalent to MenuEntry mode 0)
+				 1=Assigned (equivalent to MenuEntry mode 1 or 2)'''
+			if flag in self.assigned:
+				return 1
+			elif flag in self.flags:
+				return 0
+			else:
+				return -1
+
+		def throwError(txt, err=1):
+			'''Prints error message and exits with error no err'''
+			print(txt)
+			exit(err)
+
+		#Strict check
+		if strict:
+			#Make a big list of labels
+			allLabels=[j for i in self.getMenuEntries() for j in i.getLabels()]
+			for curFlag in self.flags:
+				curEntry=self.sgetMenuEntry(curFlag)
+				#print(f"{curFlag} -> {ftom(curFlag)} -> {curEntry}")
+				#if entry doesn't exist:
+				if curFlag not in allLabels:
+					throwError(f"[FlagError]: Invalid flag passed: '{curFlag}'!")
+				#if entry is mode 0, but flag is mode 1
+				elif curEntry.getMode()==0 and ftom(curFlag)!=0:
+					throwError(f"[FlagError]: Flag was passed an arg: '{curFlag}' <- '{self.assigned[curFlag]}'!")
+				#if entry mode is >=1, but flag is mode <=0
+				elif ftom(curFlag)==0 and self.sgetMenuEntry(curFlag).getMode()==1:
+					throwError(f"[AssignedError]: Flag requires an arg: '{curFlag}'!")
+				#ignore everything else
+				else:
+					continue
+
 		for e in self.getMenuEntries():  #Set all entries to None (default)
 			entries[e]=None if p else False
 
-		#if p isn't set, loop through all entries, setting bool when specified
-		for r in entries:
-			curFlg=r.getFlg()
-			if curFlg==0 or curFlg==2:  #Look through flags
-				if any([i for i in r.getLabels() if i in self.flags]):
-					if p:
-						entries[r]=r()
-					else:
-						entries[r]=True
 
-			if curFlg==1 or curFlg==2:  #Look through assigned
-				labels=r.getLabels()
-				val=None
+		#if p is False, loop through all entries, setting bool when specified
+		if not p:
+			for e in entries:
+				if e.getMode()==0 and einm(e.getLabels(), self.flags)\
+				or\
+				e.getMode() in [1, 2] and einm(e.getLabels(), self.assigned):
+					entries[e]=True
+		#if p is True, execute entries
+		elif p:
+			for e in entries:
+				if e.getMode()==0 and einm(e.getLabels(), self.flags):
+					entries[e]=e()  #Execute current MenuEntry
+				elif e.getMode() in [1, 2] and einm(e.getLabels(), self.flags):
+					#Get assigned value and execute with said val
+					wl=e.getWorkingLabel(self.assigned.keys())
+					if wl!=None:
+						e.setValue(self.assigned[wl])
+					entries[e]=e.execute()
 
-				#Get assigned value
-				for i in self.assigned:
-					if i in labels:
-						val=self.assigned[i]
-						break
-				#Strict check
-				if val==None and strict and curFlg==1:
-					print(f"AssignedError: No argument was given for assigned '{r.getName()}'!")
-					exit(1)
-					#raise AssignedError(f"No argument was given for assigned '{r.getName()}'!")
-
-				if any([i for i in r.getLabels() if i in self.assigned]):
-					if p:
-						entries[r]=r(val)
-					else:
-						entries[r]=True
 
 		#Get names of entries instead of entries themselves
 		for i in entries:
@@ -248,65 +284,8 @@ class ProgMenu():
 		else:  #Returns a useless function
 			return lambda *_, **a: None
 
-class MenuEntry():
-	'''Menu entry class.
-name: Entry's name. This is how it will be referenced through the PARSER dictionary.
-labels: The flags that will trigger this entry. NOTE: If multiple entries have the same flags, all will trigger!
-function: The function that will run when this entry is triggered. If you just want to determine if the flag is caught, use: 'lambda: True' (without quotes).
-	flg status:
-	- 0=flags (No arguments will be accepted. Must return True)
-	- 1=assigned (Exactly 1 positional argument is expected)
-	- 2=flags&assigned (Exactly 1 keyword argument is expected)
-
-	'''
-
-	def __init__(self, name, labels, function, flg=0):
-		self.name=name
-		self.labels=labels  #Labels being a list of the flags/args
-		self.function=function
-		self.flg=flg
-		ProgMenu.menuEntries.append(self)
-
-	def __str__(self):
-		return f"{self.name}"
-
-	def __call__(self, *args, **kwargs):
-		return self.function(*args, **kwargs)
-
-	def run(self, *args, **kwargs):
-		return self.function(*args, **kwargs)
-
-	def getName(self):
-		return self.name
-	def setName(self, new):
-		self.name=new
-
-	def getLabels(self):
-		return self.labels
-	def addLabel(self, new):
-		self.labels.append(new)
-	def removeLabel(self, old):
-		self.labels.remove(old)
-
-	def setFunction(self, new):
-		self.function=new
-
-	def getFlg(self):
-		return self.flg
-	def setFlg(self, new):
-		self.flg=new
-
-#Define certain variables & functions
-def printFAA():
-	'''Prints all found flags, assigned, and arguments in that order'''
-	print(menu.getFlags())
-	print(menu.getAssigned())
-	print(menu.getArgs())
-
-menu=ProgMenu()  #Create a global ProgMenu instance
-
 """
 class AssignedError(Exception):
-	'''An assigned entry (flg=1) was passed without an argument'''
+	'''An assigned entry (mode=1) was passed without an argument'''
 	pass
 """

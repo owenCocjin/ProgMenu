@@ -90,8 +90,8 @@ class ProgMenu():
 	- If strict is True, throw error if an assigned entry wasn't passed an arg, else just ignore it'''
 		entries={}
 		toRet={}
-		for e in self.getMenuEntries():  #Set all entries to False (default)
-			entries[e]=None
+		for e in self.getMenuEntries():  #Set all entries to None (default)
+			entries[e]=None if p else False
 
 		#if p isn't set, loop through all entries, setting bool when specified
 		for r in entries:
