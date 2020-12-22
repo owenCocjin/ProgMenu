@@ -268,7 +268,7 @@ class ProgMenu():
 
 #Verbose
 	def verboseSetup(self, verbose, prefix=None):
-		'''Used to setup verbose printing'''
+		'''Used to setup verbose printing. 'verbose' is a list of all trigger flags'''
 		def vprint(*args, **kwargs):
 			'''Verbose printing with a prefix'''
 			print(prefix, end='')
@@ -277,12 +277,19 @@ class ProgMenu():
 			'''Verbose printing without a prefix'''
 			print(*args, **kwargs)
 
+		#if verbose flags missing, return empty function
+		if not self.findFlag(verbose):
+			return lambda *_, **a: None
+
+		#Add a MenuEntry to avoid strict blocking
+		ProgMenu.menuEntries.append(MenuEntry("verbose", [verbose], lambda : None, 0))
+
+		#Return appropriate function
 		if verbose and prefix!=None:
 			return vprint
 		elif verbose and not prefix:
 			return vprintNoPrefix
-		else:  #Returns a useless function
-			return lambda *_, **a: None
+
 
 """
 class AssignedError(Exception):
