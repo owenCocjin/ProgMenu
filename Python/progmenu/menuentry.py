@@ -1,13 +1,11 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.0
+## Version:	4.1
 ## Date:	2020.12.22
 ## Description:	Holds MenuEntry and subclasses
 ## Notes:
-##    - Moved MenuEntry from progmenu to here
-##    - Created MenuEntryExecute, EntryArg, EntryFlag, and EntryKeyarg
-from .progmenu import ProgMenu
-
+##    - Fixed strict parsing collision with verbose
+##    - Current fix requires verbose to be setup BEFORE parsing.
 class MenuEntry():
 	'''Menu entry class.
 name: Entry's name. This is how it will be referenced through the PARSER dictionary.
@@ -18,19 +16,47 @@ function: The function that will run when this entry is triggered. If you just w
 	- 1=assigned (Exactly 1 positional argument is expected)
 	- 2=flags&assigned (Exactly 1 keyword argument is expected)
 	'''
+	all_entries=[]  #Class-wide list of all menu entries
+
 
 	def __init__(self, name, labels, function, mode=0):
 		self.name=name
 		self.labels=labels  #Labels being a list of the flags/args
 		self.function=function
 		self.mode=mode
-		ProgMenu.menuEntries.append(self)
+		MenuEntry.all_entries.append(self)
 
 	def __str__(self):
 		return f"{self.name}"
 
 	def __call__(self, *args, **kwargs):
 		return self.function(*args, **kwargs)
+
+	@classmethod
+	def listNames(cls):
+		'''Returns a list of names of entries in order of creation.'''
+		return [i.getName() for i in MenuEntry.all_entries]
+
+	@classmethod
+	def printEntries(cls):
+		'''Prints entries'''
+		[print(i) for i in MenuEntry.all_entries]
+
+	@classmethod
+	def getMenuEntries(cls):
+		return cls.all_entries
+
+	@classmethod
+	def sgetMenuEntry(cls, e):
+		'''Return specific menu entry by name or entries labels.'''
+		for i in cls.all_entries:
+			if i.getName()==e or (e in i.getLabels()):
+				return i
+		return False
+
+	@classmethod
+	def getEntryNames(cls):
+		return [i.getName() for i in MenuEntry.all_entries]
 
 	def run(self, *args, **kwargs):
 		return self.function(*args, **kwargs)
@@ -61,13 +87,6 @@ function: The function that will run when this entry is triggered. If you just w
 	def setMode(self, new):
 		self.mode=new
 
-class EntryFlag(MenuEntry):
-	'''MenuEntry with default mode 0'''
-	def __init__(self, name, labels, function):
-		MenuEntry.__init__(self, name, labels, function)
-		self.mode=0
-		ProgMenu.menuEntries.append(self)
-
 class MenuEntryExecute(MenuEntry):
 	'''Menu Entry with executable qualities'''
 	def __init__(self, name, labels, function, mode=0, value=None):
@@ -83,13 +102,18 @@ class MenuEntryExecute(MenuEntry):
 		'''Runs self.function with self.value only'''
 		return self.function(self.value)
 
+class EntryFlag(MenuEntry):
+	'''MenuEntry with default mode 0'''
+	def __init__(self, name, labels, function):
+		MenuEntry.__init__(self, name, labels, function)
+		self.mode=0
+
 class EntryArg(MenuEntryExecute):
 	'''MenuEntry with default mode 1'''
 	def __init__(self, name, labels, function, value=None):
 		MenuEntryExecute.__init__(self, name, labels, function)
 		self.mode=1
 		self.value=value
-		ProgMenu.menuEntries.append(self)
 
 	def execute(self):
 		'''Return None if self.value is None'''
@@ -103,7 +127,6 @@ class EntryKeyarg(MenuEntryExecute):
 		MenuEntryExecute.__init__(self, name, labels, function)
 		self.mode=2
 		self.value=value
-		ProgMenu.menuEntries.append(self)
 
 	def execute(self):
 		'''Runs self.function with self.value if not None'''

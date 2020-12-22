@@ -6,13 +6,12 @@
 ## Notes:
 ##    - Fixed strict collision with verbose
 import sys  #Required!
+from .menuentry import MenuEntry
 
 '''-------------------+
 |        SETUP        |
 +-------------------'''
 class ProgMenu():
-	menuEntries=[]  #Class-wide list of all menu entries
-
 	def __init__(self):
 		#--------Variables--------#
 		#Required!
@@ -56,32 +55,6 @@ class ProgMenu():
 	def __str__(self):
 		return f"flags:    {self.flags}\nassigned: {self.assigned}\nargs:     {self.args}"
 
-	@classmethod
-	def listNames(cls):
-		'''Returns a list of names of entries in order of creation.'''
-		return [i.getName() for i in ProgMenu.menuEntries]
-
-	@classmethod
-	def printEntries(cls):
-		'''Prints entries'''
-		[print(i) for i in ProgMenu.menuEntries]
-
-	@classmethod
-	def getMenuEntries(cls):
-		return cls.menuEntries
-
-	@classmethod
-	def sgetMenuEntry(cls, e):
-		'''Return specific menu entry by name or entries labels.'''
-		for i in cls.menuEntries:
-			if i.getName()==e or (e in i.getLabels()):
-				return i
-		return False
-
-	@classmethod
-	def getEntryNames(cls):
-		return [i.getName() for i in ProgMenu.menuEntries]
-
 #Parse
 	def parse(self, p=False, *, strict=False):
 		'''Returns a dict of <entry name:returns> while also running the entry (if p is set).
@@ -117,9 +90,9 @@ class ProgMenu():
 		#Strict check
 		if strict:
 			#Make a big list of labels
-			allLabels=[j for i in self.getMenuEntries() for j in i.getLabels()]
+			allLabels=[j for i in MenuEntry.getMenuEntries() for j in i.getLabels()]
 			for curFlag in self.flags:
-				curEntry=self.sgetMenuEntry(curFlag)
+				curEntry=MenuEntry.sgetMenuEntry(curFlag)
 				#print(f"{curFlag} -> {ftom(curFlag)} -> {curEntry}")
 				#if entry doesn't exist:
 				if curFlag not in allLabels:
@@ -128,13 +101,13 @@ class ProgMenu():
 				elif curEntry.getMode()==0 and ftom(curFlag)!=0:
 					throwError(f"[FlagError]: Flag was passed an arg: '{curFlag}' <- '{self.assigned[curFlag]}'!")
 				#if entry mode is >=1, but flag is mode <=0
-				elif ftom(curFlag)==0 and self.sgetMenuEntry(curFlag).getMode()==1:
+				elif ftom(curFlag)==0 and MenuEntry.sgetMenuEntry(curFlag).getMode()==1:
 					throwError(f"[AssignedError]: Flag requires an arg: '{curFlag}'!")
 				#ignore everything else
 				else:
 					continue
 
-		for e in self.getMenuEntries():  #Set all entries to None (default)
+		for e in MenuEntry.getMenuEntries():  #Set all entries to None (default)
 			entries[e]=None if p else False
 
 
@@ -281,7 +254,7 @@ class ProgMenu():
 			return empty
 
 		#Add MenuEntry to class-wide list to avoid strict blocking
-		ProgMenu.menuEntries.append(MenuEntry("verbose", verbose, empty, 0))
+		MenuEntry.all_entries.append(MenuEntry("verbose", verbose, empty, 0))
 
 		#Return proper function
 		if verbose and prefix!=None:
