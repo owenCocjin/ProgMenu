@@ -252,7 +252,7 @@ name: Entry's name. This is how it will be referenced through the PARSER diction
 labels: The flags that will trigger this entry. NOTE: If multiple entries have the same flags, all will trigger!
 function: The function that will run when this entry is triggered. If you just want to determine if the flag is caught, use: 'lambda: True' (without quotes).
 	flg status:
-	- 0=flags (No arguments will be accepted)
+	- 0=flags (No arguments will be accepted. Must return True)
 	- 1=assigned (Exactly 1 positional argument is expected)
 	- 2=flags&assigned (Exactly 1 keyword argument is expected)
 
