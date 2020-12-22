@@ -76,7 +76,7 @@ Ex:
 - In main file (main.py):
 ```
 from progmenu import menu
-vprint=menu.verboseSetup(menu.findFlag(['v' "verbose"])) #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: menu.verboseSetup(True)
+vprint=menu.verboseSetup(['v' "verbose"]) #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: menu.verboseSetup(True)
 print("This is without verbose!")
 vprint("This is WITH verbose!")
 ```
@@ -100,7 +100,7 @@ verboseTest.testFunc()
 - In another file (verboseTest.py):
 ```
 from progmenu import menu  #menu is required to catch flags
-vprint=menu.verboseSetup(menu.findFlag(['v', "verbose"]))  #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: menu.verboseSetup(True)
+vprint=menu.verboseSetup(['v', "verbose"])  #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: menu.verboseSetup(True)
 def testFunc():
 	'''Prints normally and with verbose'''
 	print("This is a normal print from testFunc!")

@@ -1,12 +1,10 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.0
+## Version:	4.1
 ## Date:	2020.12.22
 ## Description:	Process cmd line arguments
 ## Notes:
-##    - Moved MenuEntry class to its own module
-##    - Updated parser and strict
-##    - Updated sgetMenuEntry to look for name or label
+##    - Fixed strict collision with verbose
 import sys  #Required!
 
 '''-------------------+
@@ -268,7 +266,7 @@ class ProgMenu():
 
 #Verbose
 	def verboseSetup(self, verbose, prefix=None):
-		'''Used to setup verbose printing. 'verbose' is a list of all trigger flags'''
+		'''Used to setup verbose printing. 'verbose' is a list of trigger flags'''
 		def vprint(*args, **kwargs):
 			'''Verbose printing with a prefix'''
 			print(prefix, end='')
@@ -276,20 +274,20 @@ class ProgMenu():
 		def vprintNoPrefix(*args, **kwargs):
 			'''Verbose printing without a prefix'''
 			print(*args, **kwargs)
+		empty=lambda *_, **a: None
 
-		#if verbose flags missing, return empty function
+		#Return empty function if no verbose flags
 		if not self.findFlag(verbose):
-			return lambda *_, **a: None
+			return empty
 
-		#Add a MenuEntry to avoid strict blocking
-		ProgMenu.menuEntries.append(MenuEntry("verbose", [verbose], lambda : None, 0))
+		#Add MenuEntry to class-wide list to avoid strict blocking
+		ProgMenu.menuEntries.append(MenuEntry("verbose", verbose, empty, 0))
 
-		#Return appropriate function
+		#Return proper function
 		if verbose and prefix!=None:
 			return vprint
 		elif verbose and not prefix:
 			return vprintNoPrefix
-
 
 """
 class AssignedError(Exception):
