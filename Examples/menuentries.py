@@ -22,7 +22,7 @@ def genericFunc():
 	return 'BigValue'
 
 #Menu Entries
-noarg=EntryFlag("noarg", ['n', "noarg"], noargFunc)
-arg=EntryArg("arg", ['a', "arg"], argFunc)
-kwarg=EntryKeyarg("kwarg", ['k', "kwarg"], kwargFunc)
-generic=MenuEntry("generic", ['g', "generic", '1'], genericFunc, mode=0)  #MenuEntry class modes can be define
+EntryFlag("noarg", ['n', "noarg"], noargFunc)
+EntryArg("arg", ['a', "arg"], argFunc)
+EntryKeyarg("kwarg", ['k', "kwarg"], kwargFunc)
+MenuEntry("generic", ['g', "generic", '1'], genericFunc, mode=0)  #MenuEntry class modes can be define

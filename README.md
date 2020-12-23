@@ -52,7 +52,8 @@ def aFunc():
 	print("This is an entry function!")
 	return True
 
-a=MenuEntry("entryName", ['f', "flag"], aFunc, 0)  #help(MenuEntry) for more details)
+#This doesn't/shouldn't be saved to a variable as this may cause collisions. When an Entry class is created it adds itself to a class-wide list!
+MenuEntry("entryName", ['f', "flag"], aFunc, 0)  #help(MenuEntry) for more details)
 ```
 
 Now when you run the main file without using `f` or `flag` as a flag, nothing will happen. But if you do, it prints "This is an entry function!"
