@@ -6,18 +6,12 @@
 
 ## Installation
 
-### Python
-
 - Clone or download into a folder
 - Move progMenu.py into the working directory of a project
 
 OR
 
 - Copy Python/progmenu.py to your Python path (probably /usr/lib/pythonX.X ; Check your path with `python -c "import sys; print(sys.path)"`)
-
-### Bash
-
-- There's nothing in here right now, so...
 
 <br/>
 
