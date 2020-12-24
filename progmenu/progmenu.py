@@ -238,9 +238,9 @@ class ProgMenu():
 		return isFlags, isAssigned, isArgs
 
 #Verbose
-	def verboseSetup(self, verbose, colour=False):
+	def verboseSetup(self, verbose, *, colour=False):
 		'''Used to setup verbose printing. 'verbose' is a list of trigger flags'''
-		def vprint(*args, colour="30", **kwargs):
+		def vprint(*args, colour=None, **kwargs):
 			'''Verbose printing with colour'''
 			try:
 				#Make sure inputted colour can be valid
