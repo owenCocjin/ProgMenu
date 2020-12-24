@@ -238,20 +238,9 @@ class ProgMenu():
 		return isFlags, isAssigned, isArgs
 
 #Verbose
-	def verboseSetup(self, verbose, *, colour=False):
+	def verboseSetup(self, verbose):
 		'''Used to setup verbose printing. 'verbose' is a list of trigger flags'''
-		def vprint(*args, colour=None, **kwargs):
-			'''Verbose printing with colour'''
-			try:
-				#Make sure inputted colour can be valid
-				colour=int(colour)
-				print(f'\033[{colour}m', end='')
-				print(*args, **kwargs)
-				print('\033[0m')
-			except:
-				print(*args, **kwargs)
-		def vprintNoColour(*args, **kwargs):
-			'''Verbose printing without colour'''
+		def vprint(*args, **kwargs):
 			print(*args, **kwargs)
 		empty=lambda *_, **a: None
 
@@ -263,10 +252,7 @@ class ProgMenu():
 		MenuEntry.all_entries.append(MenuEntry("verbose", verbose, empty, 0))
 
 		#Return proper function
-		if verbose and colour:
-			return vprint
-		elif verbose and not colour:
-			return vprintNoColour
+		return vprint
 
 """
 class AssignedError(Exception):
