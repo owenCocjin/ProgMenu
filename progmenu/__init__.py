@@ -1,9 +1,11 @@
 ## Author:	Owen Cocjin
-## Version:	1.0
-## Date:	2020.12.22
+## Version:	1.1
+## Date:	2021.01.06
 ## Description:	Just a __init__ file
-## Notes
+## Notes:
+## Update:
+##    - Changed menu to MENU
 from .menuentry import *
 from .progmenu import *
 
-menu=ProgMenu()  #Create a global ProgMenu instance
+MENU=ProgMenu()  #Create a global ProgMenu instance
