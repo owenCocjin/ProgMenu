@@ -39,9 +39,9 @@ printFAA()
 
 In the main file:
 ```
-from progmenu import menu
+from progmenu import MENU
 from menuentries import *
-PARSER=menu.parse(True)  #True means run the functions instead of just returning True/None if the entry was called.
+PARSER=MENU.parse(True)  #True means run the functions instead of just returning True/None if the entry was called.
 print(f"PARSER: {PARSER}")  #Just so you can see what PARSER is. It's a dictionary of the entry names and what they returned (if called in the cmd line).
 ```
 
@@ -72,8 +72,8 @@ Ex:
 #### Using main:
 - In main file (main.py):
 ```
-from progmenu import menu
-vprint=menu.verboseSetup(['v' "verbose"]) #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: menu.verboseSetup(True)
+from progmenu import MENU
+vprint=MENU.verboseSetup(['v' "verbose"]) #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: menu.verboseSetup(True)
 print("This is without verbose!")
 vprint("This is WITH verbose!")
 ```
@@ -96,8 +96,8 @@ verboseTest.testFunc()
 ```
 - In another file (verboseTest.py):
 ```
-from progmenu import menu  #menu is required to catch flags
-vprint=menu.verboseSetup(['v', "verbose"])  #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: menu.verboseSetup(True)
+from progmenu import MENU  #MENU is required to catch flags
+vprint=MENU.verboseSetup(['v', "verbose"])  #menu.findFlag() returns True if any passed flags were found, meaning you can hardcode verbosity with: menu.verboseSetup(True)
 def testFunc():
 	'''Prints normally and with verbose'''
 	print("This is a normal print from testFunc!")
