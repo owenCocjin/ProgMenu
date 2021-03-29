@@ -1,4 +1,4 @@
-from progmenu import MenuEntry, EntryFlag, EntryArg, EntryKeyarg
+from progmenu import EntryFlag, EntryArg, EntryKeyarg
 #Menu Entry functions
 def noargFunc():
 	'''Takes no arguments'''
@@ -16,13 +16,7 @@ def kwargFunc(x='Bad'):
 	print(f"What I have is: {x}!")
 	return x
 
-def genericFunc():
-	'''Example of using MenuEntry class'''
-	print("This is an example of using MenuEntry class!")
-	return 'BigValue'
-
 #Menu Entries
 EntryFlag("noarg", ['n', "noarg"], noargFunc)
 EntryArg("arg", ['a', "arg"], argFunc)
 EntryKeyarg("kwarg", ['k', "kwarg"], kwargFunc)
-MenuEntry("generic", ['g', "generic", '1'], genericFunc, mode=0)  #MenuEntry class modes can be define
