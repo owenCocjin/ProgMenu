@@ -16,7 +16,19 @@ def kwargFunc(x='Bad'):
 	print(f"What I have is: {x}!")
 	return x
 
+def strictFunc():
+	'''This flag MUST be called if PARSER is strict'''
+	print("You have to call me!")
+	return True
+
+def strictArgFunc(x):
+	'''This takes an arg and is strict'''
+	print(f"You've given me {x}!")
+	return x
+
 #Menu Entries
 EntryFlag("noarg", ['n', "noarg"], noargFunc)
 EntryArg("arg", ['a', "arg"], argFunc)
 EntryKeyarg("kwarg", ['k', "kwarg"], kwargFunc)
+EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=True)
+EntryArg("strictarg", ['r', "sarg", "strictarg"], strictArgFunc, True)
