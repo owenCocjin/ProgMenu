@@ -66,7 +66,7 @@ Now when you run the main file without using `f` or `flag` as a flag, nothing wi
 When calling `MENU.parse()`, you can pass a boolean to the keyword 'strict'. By default this is False. When True, the parse will display warnings and quit the program when any of these conditions are met:
 - An invalid flag is passed
 - An argument is passed to a flag
-- An flag was called but it requires an argument
+- A flag was called but it requires an argument
 - An entry is marked strict, but wasn't called
 
 To use strict parsing, simply pass the keyword argument `strict=True` to parse:
