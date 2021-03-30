@@ -6,6 +6,7 @@
 ## Notes:
 ## Updates:
 ##    - Added strict parsing to parse()
+##    - Prints MenuEntry.help if verbose and missing strict flags
 import sys  #Required!
 from .menuentry import MenuEntry
 
@@ -19,6 +20,7 @@ class ProgMenu():
 		self.flags=[]
 		self.assigned={}
 		self.args=[]
+		self.verbose=[]  #Flags associated with verbose
 
 		#--------Process sys.argv--------#
 		#Find flags in sys.argv and save them
@@ -97,6 +99,12 @@ class ProgMenu():
 				if curentry.getStrict() and not any(f in self.flags for f in curentry.getLabels()):
 					strictflag=True
 					throwError(f"[StrictError]: Missing strict flag: '{curentry.getName()}'!", shouldexit=False)
+			#Print entry help if verbose
+			if any(f in self.flags for f in self.verbose):
+				entryhelp=MenuEntry.help()
+				print("Flags:")
+				for l in entryhelp:
+					print(f"\t{l}: {entryhelp[l]}")
 			if strictflag:
 				exit(1)
 			#Make a big list of labels
@@ -257,9 +265,10 @@ class ProgMenu():
 		if not self.findFlag(verbose):
 			return empty
 
+		#Store verbose flags
+		self.verbose=verbose
 		#Add MenuEntry to class-wide list to avoid strict blocking
 		MenuEntry.all_entries.append(MenuEntry("verbose", verbose, empty, 0))
-
 		#Return proper function
 		return vprint
 
