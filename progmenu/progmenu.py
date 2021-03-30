@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.1
-## Date:	2020.12.22
+## Version:	4.2
+## Date:	2021.03.30
 ## Description:	Process cmd line arguments
 ## Notes:
-##    - Fixed strict collision with verbose
+## Updates:
+##    - Added strict parsing to parse()
 import sys  #Required!
 from .menuentry import MenuEntry
 
@@ -82,13 +83,22 @@ class ProgMenu():
 			else:
 				return -1
 
-		def throwError(txt, err=1):
+		def throwError(txt, err=1, shouldexit=True):
 			'''Prints error message and exits with error no err'''
 			print(txt)
-			exit(err)
+			if shouldexit:
+				exit(err)
 
 		#Strict check
 		if strict:
+			#Loop through all entries and check if any strict ones are missing
+			strictflag=False
+			for curentry in MenuEntry.getMenuEntries():
+				if curentry.getStrict() and not any(f in self.flags for f in curentry.getLabels()):
+					strictflag=True
+					throwError(f"[StrictError]: Missing strict flag: '{curentry.getName()}'!", shouldexit=False)
+			if strictflag:
+				exit(1)
 			#Make a big list of labels
 			allLabels=[j for i in MenuEntry.getMenuEntries() for j in i.getLabels()]
 			for curFlag in self.flags:
@@ -136,7 +146,6 @@ class ProgMenu():
 			toRet[i.getName()]=entries[i]
 
 		return toRet
-
 
 #Flags
 	def findFlag(self, toFind):

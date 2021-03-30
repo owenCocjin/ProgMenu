@@ -1,11 +1,14 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.1
-## Date:	2020.12.22
+## Version:	4.2
+## Date:	2021.03.30
 ## Description:	Holds MenuEntry and subclasses
 ## Notes:
 ##    - Fixed strict parsing collision with verbose
 ##    - Current fix requires verbose to be setup BEFORE parsing.
+## Updates:
+##    - Added 'strict' tag to MenuEntry and subclasses
+##    - Removed obsolete 'value' arg from MenuEntryExecute subclasses
 class MenuEntry():
 	'''Menu entry class.
 name: Entry's name. This is how it will be referenced through the PARSER dictionary.
@@ -18,12 +21,18 @@ function: The function that will run when this entry is triggered. If you just w
 	'''
 	all_entries=[]  #Class-wide list of all menu entries
 
-
-	def __init__(self, name, labels, function, mode=0):
+	def __init__(self, name, labels, function, mode=0, strict=False):
+		'''name=Entry name
+		labels=Flags used to address entry
+		function=Function called by entry
+		mode=Mode of entry (see above)
+		strict=Mandatory flag if MENU.parser has strict set to True
+		'''
 		self.name=name
 		self.labels=labels  #Labels being a list of the flags/args
 		self.function=function
 		self.mode=mode
+		self.strict=strict
 		MenuEntry.all_entries.append(self)
 
 	def __str__(self):
@@ -31,6 +40,14 @@ function: The function that will run when this entry is triggered. If you just w
 
 	def __call__(self, *args, **kwargs):
 		return self.function(*args, **kwargs)
+
+	@classmethod
+	def help(cls):
+		'''Returns a list of entry names and their labels.'''
+		toRet={}
+		for e in cls.all_entries:
+			toRet[e.getName()]=e.getLabels()
+		return toRet
 
 	@classmethod
 	def listNames(cls):
@@ -65,7 +82,6 @@ function: The function that will run when this entry is triggered. If you just w
 		return self.name
 	def setName(self, new):
 		self.name=new
-
 	def getLabels(self):
 		return self.labels
 	def addLabel(self, new):
@@ -78,19 +94,21 @@ function: The function that will run when this entry is triggered. If you just w
 			if l in menu:
 				return l
 		return None
-
 	def setFunction(self, new):
 		self.function=new
-
 	def getMode(self):
 		return self.mode
 	def setMode(self, new):
 		self.mode=new
+	def getStrict(self):
+		return self.strict
+	def setStrict(self, new):
+		self.strict=new
 
 class MenuEntryExecute(MenuEntry):
 	'''Menu Entry with executable qualities'''
-	def __init__(self, name, labels, function, mode=0, value=None):
-		MenuEntry.__init__(self, name, labels, function, mode)
+	def __init__(self, name, labels, function, mode=0, value=None, strict=False):
+		MenuEntry.__init__(self, name, labels, function, mode, strict=strict)
 		self.value=value
 
 	def getValue(self):
@@ -104,16 +122,15 @@ class MenuEntryExecute(MenuEntry):
 
 class EntryFlag(MenuEntry):
 	'''MenuEntry with default mode 0'''
-	def __init__(self, name, labels, function):
-		MenuEntry.__init__(self, name, labels, function)
+	def __init__(self, name, labels, function, strict=False):
+		MenuEntry.__init__(self, name, labels, function, strict=strict)
 		self.mode=0
 
 class EntryArg(MenuEntryExecute):
 	'''MenuEntry with default mode 1'''
-	def __init__(self, name, labels, function, value=None):
-		MenuEntryExecute.__init__(self, name, labels, function)
-		self.mode=1
-		self.value=value
+	def __init__(self, name, labels, function, strict=False):
+		MenuEntryExecute.__init__(self, name, labels, function, 1, strict=strict)
+		self.value=None
 
 	def execute(self):
 		'''Return None if self.value is None'''
@@ -123,10 +140,9 @@ class EntryArg(MenuEntryExecute):
 
 class EntryKeyarg(MenuEntryExecute):
 	'''MenuEntry with default mode 2'''
-	def __init__(self, name, labels, function, value=None):
-		MenuEntryExecute.__init__(self, name, labels, function)
-		self.mode=2
-		self.value=value
+	def __init__(self, name, labels, function, strict=False):
+		MenuEntryExecute.__init__(self, name, labels, function, 2, strict=strict)
+		self.value=None
 
 	def execute(self):
 		'''Runs self.function with self.value if not None'''
