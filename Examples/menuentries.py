@@ -1,3 +1,10 @@
+##
+## Author:	Owen Cocjin
+## Version:	1.2
+## Date:	2021.03.30
+## Description:	Example menuentries file
+## Notes:
+##    - Added 'strict' flags
 from progmenu import EntryFlag, EntryArg, EntryKeyarg
 #Menu Entry functions
 def noargFunc():
