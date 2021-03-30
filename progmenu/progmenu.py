@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.2
+## Version:	4.2.1
 ## Date:	2021.03.30
 ## Description:	Process cmd line arguments
 ## Notes:
 ## Updates:
 ##    - Added strict parsing to parse()
 ##    - Prints MenuEntry.help if verbose and missing strict flags
+##    - Fixed strict help logic
 import sys  #Required!
 from .menuentry import MenuEntry
 
@@ -99,13 +100,13 @@ class ProgMenu():
 				if curentry.getStrict() and not any(f in self.flags for f in curentry.getLabels()):
 					strictflag=True
 					throwError(f"[StrictError]: Missing strict flag: '{curentry.getName()}'!", shouldexit=False)
-			#Print entry help if verbose
-			if any(f in self.flags for f in self.verbose):
-				entryhelp=MenuEntry.help()
-				print("Flags:")
-				for l in entryhelp:
-					print(f"\t{l}: {entryhelp[l]}")
 			if strictflag:
+				#Print entry help if verbose
+				if any(f in self.flags for f in self.verbose):
+					entryhelp=MenuEntry.help()
+					print("Flags:")
+					for l in entryhelp:
+						print(f"\t{l}: {entryhelp[l]}")
 				exit(1)
 			#Make a big list of labels
 			allLabels=[j for i in MenuEntry.getMenuEntries() for j in i.getLabels()]
