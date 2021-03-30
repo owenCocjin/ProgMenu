@@ -67,6 +67,19 @@ When calling `MENU.parse()`, you can pass a boolean to the keyword 'strict'. By 
 - An invalid flag is passed
 - An argument is passed to a flag
 - An flag was called but it requires an argument
+- An entry is marked strict, but wasn't called
+
+To use strict parsing, simply pass the keyword argument `strict=True` to parse:
+```
+PARSER=MENU.parse(True, strict=True)
+```
+
+To mark an entry as strict, either pass True as a final argument, or pass True to `strict` as a keyword:
+```
+EntryFlag("flg", ['f'], fFunc, True)
+#OR
+EntryFlag("strct", ['s'], sFunc, strict=True)
+```
 
 ### Verbose Printing
 
