@@ -12,27 +12,35 @@
 class MenuEntry():
 	'''Menu entry class.
 name: Entry's name. This is how it will be referenced through the PARSER dictionary.
-labels: The flags that will trigger this entry. NOTE: If multiple entries have the same flags, all will trigger!
+labels: The flags that will trigger this entry.
+	- NOTE: If multiple entries have the same flags, all will trigger!
 function: The function that will run when this entry is triggered. If you just want to determine if the flag is caught, use: 'lambda: True' (without quotes).
+mode: The mode the entry should be in (see below).
 	Mode status:
-	- 0=flags (No arguments will be accepted. Must return True)
-	- 1=assigned (Exactly 1 positional argument is expected)
-	- 2=flags&assigned (Exactly 1 keyword argument is expected)
+		- 0=flags (No arguments will be accepted. Must return True)
+		- 1=assigned (Exactly 1 positional argument is expected)
+		- 2=flags&assigned (Exactly 1 keyword argument is expected)
+strict: If True, the strict entry's flag MUST be called when parsed strictly.
+recurse: A list of entry names who's outputs are used as arguments to the Entry.
+	- NOTE: The recurse outputs are passed last, and are passed in the same order as the list is in.
 	'''
 	all_entries=[]  #Class-wide list of all menu entries
 
-	def __init__(self, name, labels, function, mode=0, strict=False):
+	def __init__(self, name, labels, function, mode=0, strict=False, recurse=None):
 		'''name=Entry name
 		labels=Flags used to address entry
 		function=Function called by entry
 		mode=Mode of entry (see above)
 		strict=Mandatory flag if MENU.parser has strict set to True
+		recurse=A list of other flag names who's output will be used in this entry
 		'''
 		self.name=name
 		self.labels=labels  #Labels being a list of the flags/args
 		self.function=function
 		self.mode=mode
 		self.strict=strict
+		self.recurse=recurse
+		self. vrecurse=None  #Values of recurse
 		MenuEntry.all_entries.append(self)
 
 	def __str__(self):
@@ -104,12 +112,20 @@ function: The function that will run when this entry is triggered. If you just w
 		return self.strict
 	def setStrict(self, new):
 		self.strict=new
+	def getRecurse(self):
+		return self.recurse
+	def setRecurse(self, new):
+		self.recurse=new
+	def getVRecurse(self):
+		return self.vrecurse
+	def setVRecurse(self, new):
+		self.vrecurse=new
 
 class MenuEntryExecute(MenuEntry):
 	'''Menu Entry with executable qualities'''
-	def __init__(self, name, labels, function, mode=0, value=None, strict=False):
-		MenuEntry.__init__(self, name, labels, function, mode, strict=strict)
-		self.value=value
+	def __init__(self, name, labels, function, mode=0, strict=False, recurse=None):
+		MenuEntry.__init__(self, name, labels, function, mode, strict=strict, recurse=recurse)
+		self.value=None
 
 	def getValue(self):
 		return self.value
@@ -122,30 +138,41 @@ class MenuEntryExecute(MenuEntry):
 
 class EntryFlag(MenuEntry):
 	'''MenuEntry with default mode 0'''
-	def __init__(self, name, labels, function, strict=False):
-		MenuEntry.__init__(self, name, labels, function, strict=strict)
+	def __init__(self, name, labels, function, *, strict=False, recurse=None):
+		MenuEntry.__init__(self, name, labels, function, strict=strict, recurse=recurse)
 		self.mode=0
 
+	def execute(self):
+		if self.recurse!=None:
+			return self.function(*self.vrecurse)
+		else:
+			return self.function()
+
 class EntryArg(MenuEntryExecute):
-	'''MenuEntry with default mode 1'''
-	def __init__(self, name, labels, function, strict=False):
-		MenuEntryExecute.__init__(self, name, labels, function, 1, strict=strict)
+	'''MenuEntryExecute with default mode 1'''
+	def __init__(self, name, labels, function, *, strict=False, recurse=None):
+		MenuEntryExecute.__init__(self, name, labels, function, 1, strict=strict, recurse=recurse)
 		self.value=None
 
 	def execute(self):
 		'''Return None if self.value is None'''
 		if self.value==None:
 			return None
-		return self.function(self.value)
+		if self.recurse!=None:
+			return self.function(self.value, *self.vrecurse)
+		else:
+			return self.function(self.value)
 
 class EntryKeyarg(MenuEntryExecute):
-	'''MenuEntry with default mode 2'''
-	def __init__(self, name, labels, function, strict=False):
-		MenuEntryExecute.__init__(self, name, labels, function, 2, strict=strict)
+	'''MenuEntryExecute with default mode 2'''
+	def __init__(self, name, labels, function, *, strict=False, recurse=None):
+		MenuEntryExecute.__init__(self, name, labels, function, 2, strict=strict, recurse=recurse)
 		self.value=None
 
 	def execute(self):
 		'''Runs self.function with self.value if not None'''
 		if self.value!=None:
-			return self.function(self.value)
-		return self.function()
+			if self.recurse!=None:
+				return self.function(self.value, *self.vrecurse)
+			else:
+				return self.function(self.value)

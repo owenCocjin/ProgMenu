@@ -69,11 +69,11 @@ class ProgMenu():
 		or non-entry flag was passed.'''
 		entries={}  #Dict of {MenuEntry:return}
 		toRet={}
+		recurse=[]  #List of entries that need flag info
 
 		def einm(entryLabels, menuList):
 			'''Returns True if any entryLabels are in the given menuList'''
 			return any([True for i in entryLabels if i in menuList])
-
 		def ftom(flag):
 			'''Converts a given flag to a mode based on what's passed in command line:
 				-1=Flag not found (flag isn't found in entries)
@@ -85,12 +85,21 @@ class ProgMenu():
 				return 0
 			else:
 				return -1
-
 		def throwError(txt, err=1, shouldexit=True):
 			'''Prints error message and exits with error no err'''
 			print(txt)
 			if shouldexit:
 				exit(err)
+		def runEntry(e):
+			'''Runs entry's function and returns it's result'''
+			if e.getMode()==0 and einm(e.getLabels(), self.flags):
+				return e.execute()  #Execute current MenuEntry
+			elif e.getMode() in [1, 2] and einm(e.getLabels(), self.flags):
+				#Get assigned value and execute with said val
+				wl=e.getWorkingLabel(self.assigned.keys())
+				if wl!=None:
+					e.setValue(self.assigned[wl])
+				return e.execute()
 
 		#Strict check
 		if strict:
@@ -113,22 +122,21 @@ class ProgMenu():
 			for curFlag in self.flags:
 				curEntry=MenuEntry.sgetMenuEntry(curFlag)
 				#print(f"{curFlag} -> {ftom(curFlag)} -> {curEntry}")
-				#if entry doesn't exist:
+				#If entry doesn't exist:
 				if curFlag not in allLabels:
 					throwError(f"[FlagError]: Invalid flag passed: '{curFlag}'!")
-				#if entry is mode 0, but flag is mode 1
+				#If entry is mode 0, but flag is mode 1
 				elif curEntry.getMode()==0 and ftom(curFlag)!=0:
 					throwError(f"[FlagError]: Flag was passed an arg: '{curFlag}' <- '{self.assigned[curFlag]}'!")
-				#if entry mode is >=1, but flag is mode <=0
+				#If entry mode is >=1, but flag is mode <=0
 				elif ftom(curFlag)==0 and MenuEntry.sgetMenuEntry(curFlag).getMode()==1:
 					throwError(f"[AssignedError]: Flag requires an arg: '{curFlag}'!")
-				#ignore everything else
+				#Ignore everything else
 				else:
 					continue
 
 		for e in MenuEntry.getMenuEntries():  #Set all entries to None (default)
 			entries[e]=None if p else False
-
 
 		#if p is False, loop through all entries, setting bool when specified
 		if not p:
@@ -136,23 +144,21 @@ class ProgMenu():
 				if e.getMode()==0 and einm(e.getLabels(), self.flags)\
 				or\
 				e.getMode() in [1, 2] and einm(e.getLabels(), self.assigned):
-					entries[e]=True
+					toRet[e.getName()]=True
 		#if p is True, execute entries
 		elif p:
 			for e in entries:
-				if e.getMode()==0 and einm(e.getLabels(), self.flags):
-					entries[e]=e()  #Execute current MenuEntry
-				elif e.getMode() in [1, 2] and einm(e.getLabels(), self.flags):
-					#Get assigned value and execute with said val
-					wl=e.getWorkingLabel(self.assigned.keys())
-					if wl!=None:
-						e.setValue(self.assigned[wl])
-					entries[e]=e.execute()
+				#Add to recurse is marked as so, and skip running
+				if e.getRecurse()!=None:
+					recurse.append(e)
+					continue
+				#Process entry's function
+				toRet[e.getName()]=runEntry(e)
 
-
-		#Get names of entries instead of entries themselves
-		for i in entries:
-			toRet[i.getName()]=entries[i]
+			#Process and run all recurse entries
+			for e in recurse:
+				e.setVRecurse([toRet[n] for n in e.getRecurse()])
+				toRet[e.getName()]=runEntry(e)
 
 		return toRet
 
@@ -272,9 +278,3 @@ class ProgMenu():
 		MenuEntry.all_entries.append(MenuEntry("verbose", verbose, empty, 0))
 		#Return proper function
 		return vprint
-
-"""
-class AssignedError(Exception):
-	'''An assigned entry (mode=1) was passed without an argument'''
-	pass
-"""

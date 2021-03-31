@@ -33,9 +33,15 @@ def strictArgFunc(x):
 	print(f"You've given me {x}!")
 	return x
 
+def recurseFunc(x, y):
+	'''This reads arguments from other flags!'''
+	print(f"Arg is '{x}' and noarg is '{y}'!")
+	return x, y
+
 #Menu Entries
 EntryFlag("noarg", ['n', "noarg"], noargFunc)
 EntryArg("arg", ['a', "arg"], argFunc)
 EntryKeyarg("kwarg", ['k', "kwarg"], kwargFunc)
-EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=True)
-EntryArg("strictarg", ['r', "sarg", "strictarg"], strictArgFunc, True)
+EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=False)
+EntryArg("strictarg", ['r', "sarg", "strictarg"], strictArgFunc, strict=False)
+EntryFlag("recurse", ['c', "recurse"], recurseFunc, recurse=["arg", "noarg"])
