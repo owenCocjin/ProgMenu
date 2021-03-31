@@ -100,7 +100,7 @@ EntryFlag("argie", ['a', "argie"], lambda: True)
 ```
 
 Now if "argie" is called (by using the flag "-a" or "--argie") "flagname" will return "Yes".
-**Note that if "argie" isn't called, by default it will return None, which is boolean False**
+**Note that if "argie" isn't called, by default it will return None, which is boolean False!**
 
 ### Verbose Printing
 
