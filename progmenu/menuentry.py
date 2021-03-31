@@ -1,14 +1,12 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.2
-## Date:	2021.03.30
+## Version:	4.2.1
+## Date:	2021.03.31
 ## Description:	Holds MenuEntry and subclasses
 ## Notes:
-##    - Fixed strict parsing collision with verbose
 ##    - Current fix requires verbose to be setup BEFORE parsing.
 ## Updates:
-##    - Added 'strict' tag to MenuEntry and subclasses
-##    - Removed obsolete 'value' arg from MenuEntryExecute subclasses
+##    - Updated EntryKeyarg name -> EntryKeyArg
 class MenuEntry():
 	'''Menu entry class.
 name: Entry's name. This is how it will be referenced through the PARSER dictionary.
@@ -163,7 +161,7 @@ class EntryArg(MenuEntryExecute):
 		else:
 			return self.function(self.value)
 
-class EntryKeyarg(MenuEntryExecute):
+class EntryKeyArg(MenuEntryExecute):
 	'''MenuEntryExecute with default mode 2'''
 	def __init__(self, name, labels, function, *, strict=False, recurse=None):
 		MenuEntryExecute.__init__(self, name, labels, function, 2, strict=strict, recurse=recurse)
