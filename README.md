@@ -22,8 +22,8 @@ OR
 Run this code as a script to test if it's working:
 
 ```
-from progmenu import printFAA
-printFAA()
+from progmenu import MENU
+print(MENU)
 #Prints all the passed flags, assigned, and args in that order
 ```
 
@@ -80,6 +80,28 @@ EntryFlag("flg", ['f'], fFunc, True)
 #OR
 EntryFlag("strct", ['s'], sFunc, strict=True)
 ```
+
+### Recursed Entries
+> Recursed allows an entry to use return values of other entries as it's own arguments
+
+Sometimes it's handy and cleaner to use return values of other flags as an argument in an entry. For this, you need to use 'recurse'. When making an entry, pass a list of entry names to the keyword `recurse`. When the recursed flag is called it will be passed arguments from other flags in the same order as the recurse list!
+
+Create a recursed entry liek this:
+```
+def flagFunc(a):
+	'''Returns "Yes" if the "argie" flag was called'''
+	if a:
+		return "Yes"
+	else:
+		return "No"
+
+EntryFlag("flagname", ['f', "flag"], flagFunc, recurse=["argie"]])
+EntryFlag("argie", ['a', "argie"], lambda: True)
+```
+
+Now if "argie" is called (by using the flag "-a" or "--argie") "flagname" will return "Yes".
+
+**Note that if "argie" isn't called, by default it will return None, which is boolean False**
 
 ### Verbose Printing
 
