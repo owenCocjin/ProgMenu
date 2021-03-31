@@ -71,6 +71,12 @@ class ProgMenu():
 		toRet={}
 		recurse=[]  #List of entries that need flag info
 
+		#Check for help flag first!
+		helpentry=MenuEntry.sgetMenuEntries()
+		if helpentry:
+			helpentry.execute()
+			exit(0)
+
 		def einm(entryLabels, menuList):
 			'''Returns True if any entryLabels are in the given menuList'''
 			return any([True for i in entryLabels if i in menuList])
