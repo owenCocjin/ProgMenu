@@ -1,11 +1,11 @@
 ##
 ## Author:	Owen Cocjin
-## Version:	1.2
-## Date:	2021.03.30
+## Version:	1.3
+## Date:	2021.03.31
 ## Description:	Example menuentries file
 ## Notes:
-##    - Added 'strict' flags
-from progmenu import EntryFlag, EntryArg, EntryKeyarg
+##    - Added recurse examples
+from progmenu import EntryFlag, EntryArg, EntryKeyArg
 #Menu Entry functions
 def noargFunc():
 	'''Takes no arguments'''
@@ -38,10 +38,16 @@ def recurseFunc(x, y):
 	print(f"Arg is '{x}' and noarg is '{y}'!")
 	return x, y
 
+def argcurseFunc(arg, rec):
+	'''This takes an arg AND recurse'''
+	print(f"Your arg is '{arg}' and the recurse is '{rec}'")
+	return arg
+
 #Menu Entries
 EntryFlag("noarg", ['n', "noarg"], noargFunc)
 EntryArg("arg", ['a', "arg"], argFunc)
-EntryKeyarg("kwarg", ['k', "kwarg"], kwargFunc)
+EntryKeyArg("kwarg", ['k', "kwarg"], kwargFunc)
 EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=False)
 EntryArg("strictarg", ['r', "sarg", "strictarg"], strictArgFunc, strict=False)
 EntryFlag("recurse", ['c', "recurse"], recurseFunc, recurse=["arg", "noarg"])
+EntryArg("argcurse", ['z', "argcurse"], argcurseFunc, recurse=["recurse"])
