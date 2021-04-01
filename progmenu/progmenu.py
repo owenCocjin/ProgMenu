@@ -1,13 +1,14 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.2.1
-## Date:	2021.03.30
+## Version:	4.2.3
+## Date:	2021.04.01
 ## Description:	Process cmd line arguments
 ## Notes:
+##    - Verbose must be defined before strict parsing, otherwise parser will identify verbose flag as invalid
 ## Updates:
-##    - Added strict parsing to parse()
-##    - Prints MenuEntry.help if verbose and missing strict flags
-##    - Fixed strict help logic
+##    - Forced 'help' entry to run before all else, then quit
+##    - Removes "verbose" if it exists from all_entries list.
+##      This prevents any execution calls vor verbose (which will ulitmately crash)
 import sys  #Required!
 from .menuentry import MenuEntry
 
@@ -21,7 +22,7 @@ class ProgMenu():
 		self.flags=[]
 		self.assigned={}
 		self.args=[]
-		self.verbose=[]  #Flags associated with verbose
+		self.verbose=None  #Entry created by self.verboseSetup()
 
 		#--------Process sys.argv--------#
 		#Find flags in sys.argv and save them
@@ -72,8 +73,8 @@ class ProgMenu():
 		recurse=[]  #List of entries that need flag info
 
 		#Check for help flag first!
-		helpentry=MenuEntry.sgetMenuEntries()
-		if helpentry:
+		helpentry=MenuEntry.sgetMenuEntry("help")
+		if helpentry and self.findFlag(helpentry.getLabels()):
 			helpentry.execute()
 			exit(0)
 
@@ -110,7 +111,7 @@ class ProgMenu():
 		#Strict check
 		if strict:
 			#Loop through all entries and check if any strict ones are missing
-			strictflag=False
+			strictflag=False  #Used to confirm if help was called or not
 			for curentry in MenuEntry.getMenuEntries():
 				if curentry.getStrict() and not any(f in self.flags for f in curentry.getLabels()):
 					strictflag=True
@@ -123,6 +124,7 @@ class ProgMenu():
 					for l in entryhelp:
 						print(f"\t{l}: {entryhelp[l]}")
 				exit(1)
+
 			#Make a big list of labels
 			allLabels=[j for i in MenuEntry.getMenuEntries() for j in i.getLabels()]
 			for curFlag in self.flags:
@@ -140,6 +142,9 @@ class ProgMenu():
 				#Ignore everything else
 				else:
 					continue
+			#Remove verbose entry from all_entries to prevent execution calls
+			if self.verbose!=None:
+				MenuEntry.removeEntry('verbose')
 
 		for e in MenuEntry.getMenuEntries():  #Set all entries to None (default)
 			entries[e]=None if p else False
@@ -278,9 +283,7 @@ class ProgMenu():
 		if not self.findFlag(verbose):
 			return empty
 
-		#Store verbose flags
-		self.verbose=verbose
-		#Add MenuEntry to class-wide list to avoid strict blocking
-		MenuEntry.all_entries.append(MenuEntry("verbose", verbose, empty, 0))
+		#Store verbose entry
+		self.verbose=MenuEntry("verbose", verbose, empty, 0)
 		#Return proper function
 		return vprint
