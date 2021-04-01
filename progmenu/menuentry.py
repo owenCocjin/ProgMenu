@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.2.1
-## Date:	2021.03.31
+## Version:	4.2.2
+## Date:	2021.04.01
 ## Description:	Holds MenuEntry and subclasses
 ## Notes:
-##    - Current fix requires verbose to be setup BEFORE parsing.
+##    - Requires verbose to be setup BEFORE parsing.
 ## Updates:
 ##    - Updated EntryKeyarg name -> EntryKeyArg
+##    - Added "addEntry" and "removeEntry" functions
 class MenuEntry():
 	'''Menu entry class.
 name: Entry's name. This is how it will be referenced through the PARSER dictionary.
@@ -38,7 +39,7 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 		self.mode=mode
 		self.strict=strict
 		self.recurse=recurse
-		self. vrecurse=None  #Values of recurse
+		self.vrecurse=None  #Values of recurse
 		MenuEntry.all_entries.append(self)
 
 	def __str__(self):
@@ -54,21 +55,30 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 		for e in cls.all_entries:
 			toRet[e.getName()]=e.getLabels()
 		return toRet
-
+	@classmethod
+	def addEntry(cls, new):
+		'''Add an entry to the class-wide list'''
+		MenuEntry.all_entries.append(new)
+	@classmethod
+	def removeEntry(cls, e):
+		'''Removes an entry by name.
+		Returns True if entry was found/deleted, False otherwise.'''
+		for i in range(len(MenuEntry.all_entries)):
+			if MenuEntry.all_entries[i].getName()==e:
+				del MenuEntry.all_entries[i]
+				return True
+		return False
 	@classmethod
 	def listNames(cls):
 		'''Returns a list of names of entries in order of creation.'''
 		return [i.getName() for i in MenuEntry.all_entries]
-
 	@classmethod
 	def printEntries(cls):
 		'''Prints entries'''
 		[print(i) for i in MenuEntry.all_entries]
-
 	@classmethod
 	def getMenuEntries(cls):
 		return cls.all_entries
-
 	@classmethod
 	def sgetMenuEntry(cls, e):
 		'''Return specific menu entry by name or entries labels.'''
@@ -76,7 +86,6 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 			if i.getName()==e or (e in i.getLabels()):
 				return i
 		return False
-
 	@classmethod
 	def getEntryNames(cls):
 		return [i.getName() for i in MenuEntry.all_entries]
