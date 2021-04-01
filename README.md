@@ -107,7 +107,7 @@ Now if "argie" is called (by using the flag "-a" or "--argie") "flagname" will r
 To use verbose printing, simply print like normal, but use the function "vprint" instead of "print" (And make sure the verbose flag was set).
 To use verbose printing in other files, you MUST make sure you import vprint in each file (you don't need to set verbosity anywhere other than main), otherwise Python will complain that vprint wasn't defined.
 
-> Currently, there is an issue where in order to politely use verbose and menu entries, you must setup verbose __BEFORE__ parsing strictly!
+> Currently, there is an issue where in order to politely use verbose and menu entries, you must setup verbose __BEFORE__ parsing strictly! Without strict parsing, verbose works as expected.
 
 Ex:
 
