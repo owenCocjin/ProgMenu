@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.2.3
+## Version:	4.2.4
 ## Date:	2021.04.01
 ## Description:	Process cmd line arguments
 ## Notes:
@@ -9,6 +9,7 @@
 ##    - Forced 'help' entry to run before all else, then quit
 ##    - Removes "verbose" if it exists from all_entries list.
 ##      This prevents any execution calls vor verbose (which will ulitmately crash)
+##    - Fixed issue with verbose misbehaving when declared from a file other than main
 import sys  #Required!
 from .menuentry import MenuEntry
 
@@ -118,13 +119,16 @@ class ProgMenu():
 					throwError(f"[StrictError]: Missing strict flag: '{curentry.getName()}'!", shouldexit=False)
 			if strictflag:
 				#Print entry help if verbose
-				if any(f in self.flags for f in self.verbose):
+				if self.verbose!=None and any(f in self.flags for f in self.verbose.getLabels()):
 					entryhelp=MenuEntry.help()
 					print("Flags:")
 					for l in entryhelp:
 						print(f"\t{l}: {entryhelp[l]}")
 				exit(1)
 
+			#Add verbose to entry list
+			if self.verbose!=None:
+				MenuEntry.addEntry(self.verbose)
 			#Make a big list of labels
 			allLabels=[j for i in MenuEntry.getMenuEntries() for j in i.getLabels()]
 			for curFlag in self.flags:
@@ -285,5 +289,7 @@ class ProgMenu():
 
 		#Store verbose entry
 		self.verbose=MenuEntry("verbose", verbose, empty, 0)
+		#Remove verbose from entry list due to bugginess
+		MenuEntry.removeEntry("verbose")
 		#Return proper function
 		return vprint
