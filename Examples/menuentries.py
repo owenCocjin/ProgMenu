@@ -47,7 +47,7 @@ def argcurseFunc(arg, rec):
 EntryFlag("noarg", ['n', "noarg"], noargFunc)
 EntryArg("arg", ['a', "arg"], argFunc)
 EntryKeyArg("kwarg", ['k', "kwarg"], kwargFunc)
-EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=False)
+EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=True)
 EntryArg("strictarg", ['r', "sarg", "strictarg"], strictArgFunc, strict=False)
 EntryFlag("recurse", ['c', "recurse"], recurseFunc, recurse=["arg", "noarg"])
 EntryArg("argcurse", ['z', "argcurse"], argcurseFunc, recurse=["recurse"])
