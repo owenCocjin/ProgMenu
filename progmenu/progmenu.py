@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.2.5
+## Version:	4.3
 ## Date:	2021.04.11
 ## Description:	Process cmd line arguments
 ## Notes:
 ##    - Verbose must be defined before strict parsing, otherwise parser will identify verbose flag as invalid
 ## Updates:
-##    - Fixed issue with EntryKeyArg not reacting when called w/o value
+##    - Added "default" arg to MenuEntryExecute.
+##    - When default is passed, this value will be used when a flag if a flag isn't called
 import sys  #Required!
 from .menuentry import MenuEntry
 
@@ -105,7 +106,8 @@ class ProgMenu():
 				return e.execute()
 			elif e.getMode() in [0, 2] and einm(e.getLabels(), self.flags):
 				return e.execute()  #Execute current MenuEntry
-
+			elif e.getMode()!=0:
+				return e.getDefault()
 		#Strict check
 		if strict:
 			#Loop through all entries and check if any strict ones are missing

@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.2.3
+## Version:	4.3.
 ## Date:	2021.04.11
 ## Description:	Holds MenuEntry and subclasses
 ## Notes:
 ##    - Requires verbose to be setup BEFORE parsing.
 ## Updates:
-##    - Fixed issue with EntryKeyArg not reacting when called w/o value
+##    - Added "default" arg to MenuEntryExecute.
+##    - When default is passed, this value will be used when a flag if a flag isn't called
 class MenuEntry():
 	'''Menu entry class.
 name: Entry's name. This is how it will be referenced through the PARSER dictionary.
@@ -129,14 +130,19 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 
 class MenuEntryExecute(MenuEntry):
 	'''Menu Entry with executable qualities'''
-	def __init__(self, name, labels, function, mode=0, strict=False, recurse=None):
+	def __init__(self, name, labels, function, mode=0, *, strict=False, recurse=None, default=None):
 		MenuEntry.__init__(self, name, labels, function, mode, strict=strict, recurse=recurse)
 		self.value=None
+		self.default=default
 
 	def getValue(self):
 		return self.value
 	def setValue(self, new):
 		self.value=new
+	def getDefault(self):
+		return self.default
+	def setDefault(self, new):
+		self.default=new
 
 	def execute(self):
 		'''Runs self.function with self.value only'''
@@ -156,8 +162,8 @@ class EntryFlag(MenuEntry):
 
 class EntryArg(MenuEntryExecute):
 	'''MenuEntryExecute with default mode 1'''
-	def __init__(self, name, labels, function, *, strict=False, recurse=None):
-		MenuEntryExecute.__init__(self, name, labels, function, 1, strict=strict, recurse=recurse)
+	def __init__(self, name, labels, function, *, strict=False, recurse=None, default=None):
+		MenuEntryExecute.__init__(self, name, labels, function, 1, strict=strict, recurse=recurse, default=default)
 		self.value=None
 
 	def execute(self):
@@ -171,8 +177,8 @@ class EntryArg(MenuEntryExecute):
 
 class EntryKeyArg(MenuEntryExecute):
 	'''MenuEntryExecute with default mode 2'''
-	def __init__(self, name, labels, function, *, strict=False, recurse=None):
-		MenuEntryExecute.__init__(self, name, labels, function, 2, strict=strict, recurse=recurse)
+	def __init__(self, name, labels, function, *, strict=False, recurse=None, default=None):
+		MenuEntryExecute.__init__(self, name, labels, function, 2, strict=strict, recurse=recurse, default=default)
 		self.value=[]  #Uses a list because otherwise None would always be passed
 
 	def setValue(self, v):

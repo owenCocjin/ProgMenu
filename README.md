@@ -109,7 +109,24 @@ To use verbose printing in other files, you MUST make sure you import vprint in 
 
 > Currently, there is an issue where in order to politely use verbose and menu entries, you must setup verbose __BEFORE__ parsing strictly! Without strict parsing, verbose works as expected.
 
-Ex:
+### Default Substituting
+> Normally if a flag isn't called, it's value in PARSER is None. This can be changed.
+
+By using the keyword `default` in the Entry declaration, we can change the default value of "None":
+
+```
+from progmenu import MENU, EntryArg
+PARSER=MENU.parse(True)
+
+EntryArg("default", ['d'], lambda a:a, default="Nothing")
+```
+Now if the -d flag isn't called, `PARSER["default"]="Nothing"`. If it is called, it will be whatever arg is passed to it.
+
+<b>Note:</b> Only `EntryArg` and `EntryKeyArg` can use default subbing.
+
+---
+
+## Advanced Examples:
 
 #### Using main:
 - In main file (main.py):
@@ -152,4 +169,13 @@ This is a normal print from testFunc!
 $ python main.py -v
 This is a normal print from testFunc!
 This is verbose print from testFunc!
+```
+
+#### Ignoring Functions:
+> Most times it is easier to simply use lambda instead of making an entire function
+
+```
+EntryFlag("flag", ['f'], lambda:True)
+EntryArg("arg", ['a'], lambda a:a)
+EntryKeyArg("key", ['k'], lambda k="Blank":k)
 ```

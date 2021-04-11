@@ -19,7 +19,8 @@ def argFunc(x):
 	return x
 
 def kwargFunc(x='Bad'):
-	'''Like mode 1, but has a default if no arg given'''
+	'''Like mode 1, but has a value if no arg given.
+	If not called, uses default value (passed in EntryKeyArg)!'''
 	print(f"What I have is: {x}!")
 	return x
 
@@ -46,7 +47,7 @@ def argcurseFunc(arg, rec):
 #Menu Entries
 EntryFlag("noarg", ['n', "noarg"], noargFunc)
 EntryArg("arg", ['a', "arg"], argFunc)
-EntryKeyArg("kwarg", ['k', "kwarg"], kwargFunc)
+EntryKeyArg("kwarg", ['k', "kwarg"], kwargFunc, default="default")
 EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=True)
 EntryArg("strictarg", ['r', "sarg", "strictarg"], strictArgFunc, strict=False)
 EntryFlag("recurse", ['c', "recurse"], recurseFunc, recurse=["arg", "noarg"])
