@@ -122,8 +122,6 @@ EntryArg("default", ['d'], lambda a:a, default="Nothing")
 ```
 Now if the -d flag isn't called, `PARSER["default"]="Nothing"`. If it is called, it will be whatever arg is passed to it.
 
-<b>Note:</b> Only `EntryArg` and `EntryKeyArg` can use default subbing.
-
 ---
 
 ## Advanced Examples:

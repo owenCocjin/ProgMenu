@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.3
+## Version:	4.3.1
 ## Date:	2021.04.11
 ## Description:	Process cmd line arguments
 ## Notes:
@@ -8,6 +8,7 @@
 ## Updates:
 ##    - Added "default" arg to MenuEntryExecute.
 ##    - When default is passed, this value will be used when a flag if a flag isn't called
+##    - Added "defaults" to EntryFlag
 import sys  #Required!
 from .menuentry import MenuEntry
 
@@ -106,7 +107,7 @@ class ProgMenu():
 				return e.execute()
 			elif e.getMode() in [0, 2] and einm(e.getLabels(), self.flags):
 				return e.execute()  #Execute current MenuEntry
-			elif e.getMode()!=0:
+			else:
 				return e.getDefault()
 		#Strict check
 		if strict:

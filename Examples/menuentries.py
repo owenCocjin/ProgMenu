@@ -45,7 +45,7 @@ def argcurseFunc(arg, rec):
 	return arg
 
 #Menu Entries
-EntryFlag("noarg", ['n', "noarg"], noargFunc)
+EntryFlag("noarg", ['n', "noarg"], noargFunc, default='Nothing')
 EntryArg("arg", ['a', "arg"], argFunc)
 EntryKeyArg("kwarg", ['k', "kwarg"], kwargFunc, default="default")
 EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=True)

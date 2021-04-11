@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.3.
+## Version:	4.3.1
 ## Date:	2021.04.11
 ## Description:	Holds MenuEntry and subclasses
 ## Notes:
@@ -8,6 +8,7 @@
 ## Updates:
 ##    - Added "default" arg to MenuEntryExecute.
 ##    - When default is passed, this value will be used when a flag if a flag isn't called
+##    - Added "defaults" to EntryFlag
 class MenuEntry():
 	'''Menu entry class.
 name: Entry's name. This is how it will be referenced through the PARSER dictionary.
@@ -25,7 +26,7 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 	'''
 	all_entries=[]  #Class-wide list of all menu entries
 
-	def __init__(self, name, labels, function, mode=0, strict=False, recurse=None):
+	def __init__(self, name, labels, function, mode=0, strict=False, recurse=None, default=None):
 		'''name=Entry name
 		labels=Flags used to address entry
 		function=Function called by entry
@@ -40,6 +41,7 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 		self.strict=strict
 		self.recurse=recurse
 		self.vrecurse=None  #Values of recurse
+		self.default=default
 		MenuEntry.all_entries.append(self)
 
 	def __str__(self):
@@ -127,22 +129,21 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 		return self.vrecurse
 	def setVRecurse(self, new):
 		self.vrecurse=new
+	def getDefault(self):
+		return self.default
+	def setDefault(self, new):
+		self.default=new
 
 class MenuEntryExecute(MenuEntry):
 	'''Menu Entry with executable qualities'''
 	def __init__(self, name, labels, function, mode=0, *, strict=False, recurse=None, default=None):
-		MenuEntry.__init__(self, name, labels, function, mode, strict=strict, recurse=recurse)
+		MenuEntry.__init__(self, name, labels, function, mode, strict=strict, recurse=recurse, default=default)
 		self.value=None
-		self.default=default
 
 	def getValue(self):
 		return self.value
 	def setValue(self, new):
 		self.value=new
-	def getDefault(self):
-		return self.default
-	def setDefault(self, new):
-		self.default=new
 
 	def execute(self):
 		'''Runs self.function with self.value only'''
@@ -150,8 +151,8 @@ class MenuEntryExecute(MenuEntry):
 
 class EntryFlag(MenuEntry):
 	'''MenuEntry with default mode 0'''
-	def __init__(self, name, labels, function, *, strict=False, recurse=None):
-		MenuEntry.__init__(self, name, labels, function, strict=strict, recurse=recurse)
+	def __init__(self, name, labels, function, *, strict=False, recurse=None, default=None):
+		MenuEntry.__init__(self, name, labels, function, strict=strict, recurse=recurse, default=default)
 		self.mode=0
 
 	def execute(self):
