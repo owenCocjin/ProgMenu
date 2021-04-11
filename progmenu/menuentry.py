@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.2.2
-## Date:	2021.04.01
+## Version:	4.2.3
+## Date:	2021.04.11
 ## Description:	Holds MenuEntry and subclasses
 ## Notes:
 ##    - Requires verbose to be setup BEFORE parsing.
 ## Updates:
-##    - Updated EntryKeyarg name -> EntryKeyArg
-##    - Added "addEntry" and "removeEntry" functions
+##    - Fixed issue with EntryKeyArg not reacting when called w/o value
 class MenuEntry():
 	'''Menu entry class.
 name: Entry's name. This is how it will be referenced through the PARSER dictionary.
@@ -174,12 +173,15 @@ class EntryKeyArg(MenuEntryExecute):
 	'''MenuEntryExecute with default mode 2'''
 	def __init__(self, name, labels, function, *, strict=False, recurse=None):
 		MenuEntryExecute.__init__(self, name, labels, function, 2, strict=strict, recurse=recurse)
-		self.value=None
+		self.value=[]  #Uses a list because otherwise None would always be passed
+
+	def setValue(self, v):
+		'''Sets value'''
+		self.value.append(v)
 
 	def execute(self):
-		'''Runs self.function with self.value if not None'''
-		if self.value!=None:
-			if self.recurse!=None:
-				return self.function(self.value, *self.vrecurse)
-			else:
-				return self.function(self.value)
+		'''Runs self.function'''
+		if self.recurse!=None:
+			return self.function(*self.value, *self.vrecurse)
+		else:
+			return self.function(*self.value)

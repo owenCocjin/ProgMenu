@@ -1,15 +1,12 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.2.4
-## Date:	2021.04.01
+## Version:	4.2.5
+## Date:	2021.04.11
 ## Description:	Process cmd line arguments
 ## Notes:
 ##    - Verbose must be defined before strict parsing, otherwise parser will identify verbose flag as invalid
 ## Updates:
-##    - Forced 'help' entry to run before all else, then quit
-##    - Removes "verbose" if it exists from all_entries list.
-##      This prevents any execution calls vor verbose (which will ulitmately crash)
-##    - Fixed issue with verbose misbehaving when declared from a file other than main
+##    - Fixed issue with EntryKeyArg not reacting when called w/o value
 import sys  #Required!
 from .menuentry import MenuEntry
 
@@ -100,14 +97,14 @@ class ProgMenu():
 				exit(err)
 		def runEntry(e):
 			'''Runs entry's function and returns it's result'''
-			if e.getMode()==0 and einm(e.getLabels(), self.flags):
-				return e.execute()  #Execute current MenuEntry
-			elif e.getMode() in [1, 2] and einm(e.getLabels(), self.flags):
+			if e.getMode() in [1, 2] and einm(e.getLabels(), self.flags):
 				#Get assigned value and execute with said val
 				wl=e.getWorkingLabel(self.assigned.keys())
 				if wl!=None:
 					e.setValue(self.assigned[wl])
 				return e.execute()
+			elif e.getMode() in [0, 2] and einm(e.getLabels(), self.flags):
+				return e.execute()  #Execute current MenuEntry
 
 		#Strict check
 		if strict:
