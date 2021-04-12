@@ -100,7 +100,10 @@ EntryFlag("argie", ['a', "argie"], lambda: True)
 ```
 
 Now if "argie" is called (by using the flag "-a" or "--argie") "flagname" will return "Yes".
-**Note that if "argie" isn't called, by default it will return None, which is boolean False!**
+
+**Notes:**
+- If "argie" isn't called, by default it will return None, which is boolean False!
+- When using recurse with EntryArg or EntryKeyArg, make sure the recurse args are defined first, in the order defined by the `recurse` keyword. (See Examples/menuentries for more details.)
 
 ### Verbose Printing
 
