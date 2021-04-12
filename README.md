@@ -103,7 +103,7 @@ Now if "argie" is called (by using the flag "-a" or "--argie") "flagname" will r
 
 **Notes:**
 - If "argie" isn't called, by default it will return None, which is boolean False!
-- When using recurse with EntryArg or EntryKeyArg, make sure the recurse args are defined first, in the order defined by the `recurse` keyword. (See Examples/menuentries for more details.)
+- When using recurse with EntryArg or EntryKeyArg, make sure the recurse args are defined last, in the order defined by the `recurse` keyword. (See Examples/menuentries for more details.)
 
 ### Verbose Printing
 
