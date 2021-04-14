@@ -171,22 +171,23 @@ class ProgMenu():
 				#Process entry's function
 				toRet[e.getName()]=runEntry(e)
 
+			#Check for any 2 layered recurses, quit if any exist
+			for curse in recurse:
+				for r in recurse[curse].getRecurse():
+					if r in recurse\
+					and\
+					any(sub in recurse for sub in recurse[r].getRecurse()):
+						throwError(f"[RecurseError:Pre-run]: Nested recurse '{r}' goes too deep!")
+					elif r not in MenuEntry.getEntryNames():  #Calling a recurse that doesn't exist
+						throwError(f"[RecurseError:Missing]: Entry '{r}' doesn't exist!")
+				#Move recurse to toRet
+				toRet[curse]=recurse[curse]
 			#Process and run all recurse entries
 			for curentry in recurse:
-				for currecurse in recurse[curentry].getRecurse():  #Loop through curentry recurses
-					if currecurse not in toRet:
-						#Must be asking for a recursed entry, make sure it isn't 2 layers deep
-						currecurse=MenuEntry.sgetMenuEntry(currecurse)
-						if not any(nest in recurse for nest in currecurse.getRecurse()):
-							#currecurse isn't nested, so run currecurse, then run recurse
-							currecurse.setVRecurse([toRet[n] for n in currecurse.getRecurse()])
-							toRet[currecurse.getName()]=runEntry(currecurse)
-						else:
-							throwError("[RecurseError]: Nested recurse goes too deep!")
+				for curse in recurse[curentry].getRecurse():  #Loop through curentry recurses
 					curentryobj=recurse[curentry]
 					curentryobj.setVRecurse([toRet[n] for n in curentryobj.getRecurse()])
 					toRet[curentry]=runEntry(curentryobj)
-
 		return toRet
 
 #Flags
