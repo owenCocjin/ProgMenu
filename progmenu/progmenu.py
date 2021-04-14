@@ -171,9 +171,21 @@ class ProgMenu():
 				toRet[e.getName()]=runEntry(e)
 
 			#Process and run all recurse entries
-			for e in recurse:
-				e.setVRecurse([toRet[n] for n in e.getRecurse()])
-				toRet[e.getName()]=runEntry(e)
+			print(f"toRet: {toRet}")
+			for curentry in recurse:
+				for currecurse in curentry.getRecurse():  #Loop through curentry recurses
+					print(f"{curentry}|{currecurse}")
+					if currecurse not in toRet:
+						#Must be asking for a recursed entry, make sure it isn't 2 layers deep
+						currecurse=MenuEntry.sgetMenuEntry(currecurse)
+						if not any(nest in recurse for nest in currecurse.getRecurse()):
+							#currecurse isn't nested, so run currecurse, then run recurse
+							toRet[currecurse.getName()]=runEntry(currecurse)
+						else:
+							throwError("[RecurseError]: Nested recurse goes too deep!")
+					curentry.setVRecurse(toRet[currecurse])
+					print(f"curentry: {curentry.getVRecurse()}")
+					toRet[curentry.getName()]=runEntry(curentry)
 
 		return toRet
 
