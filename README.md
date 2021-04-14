@@ -186,6 +186,6 @@ EntryKeyArg("key", ['k'], lambda k="Blank":k)
 ## Bugs:
 
 #### Recursed
-- Recursed entries call sub-recurses. This means any print statements in the sub-recurse <b>will</b> be printed. Be cautious when using recurse on any entry that prints anything.
-- Recursed entries <b>should</b> only allow a max recursion depth of 2, but due to how sub-recurses are processed, the depth may be extended based on the order the recurses are called. This honestly isn't that much of an issue as it benefits the user (adds potential to evade Recurse error), but is essentially unpredictable/unreliable to implement. Because of this unpredictability, any recursed function that goes beyond a depth of 2 can run sub-recurses an unpredictable number of times.
-- Luckily, these recursed bugs don't seem to affect looped recurses and will appropriately raise an error.
+- ~~<b>[bug:0.0]</b>: Recursed entries call sub-recurses. This means any print statements in the sub-recurse <b>will</b> be printed. Be cautious when using recurse on any entry that prints anything.~~
+- ~~<b>[bug:0.1]</b>: Recursed entries <b>should</b> only allow a max recursion depth of 2, but due to how sub-recurses are processed, the depth may be extended based on the order the recurses are called. This honestly isn't that much of an issue as it benefits the user (adds potential to evade Recurse error), but is essentially unpredictable/unreliable to implement. Because of this unpredictability, any recursed function that goes beyond a depth of 2 can run sub-recurses an unpredictable number of times.~~
+- ~~Luckily, these recursed bugs don't seem to affect looped recurses and will appropriately raise an error.~~
