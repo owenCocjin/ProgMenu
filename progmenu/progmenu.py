@@ -183,7 +183,7 @@ class ProgMenu():
 							toRet[currecurse.getName()]=runEntry(currecurse)
 						else:
 							throwError("[RecurseError]: Nested recurse goes too deep!")
-					curentry.setVRecurse(toRet[currecurse])
+					curentry.setVRecurse([toRet[currecurse]])
 					print(f"curentry: {curentry.getVRecurse()}")
 					toRet[curentry.getName()]=runEntry(curentry)
 
