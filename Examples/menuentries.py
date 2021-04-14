@@ -1,12 +1,13 @@
 ##
 ## Author:	Owen Cocjin
-## Version:	1.4
+## Version:	1.4.1
 ## Date:	2021.04.14
 ## Description:	Example menuentries file
 ## Notes:
 ##    - Added recurse examples
 ## Updates:
 ##    - Added nested recursed entries
+##    - Commented out nested recursed entries (they would throw an error otherwise)
 from progmenu import EntryFlag, EntryArg, EntryKeyArg
 #Menu Entry functions
 def noargFunc():
@@ -54,6 +55,7 @@ EntryKeyArg("kwarg", ['k', "kwarg"], kwargFunc, default="default")
 EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=True)
 EntryArg("strictarg", ['r', "sarg", "strictarg"], strictArgFunc, strict=False)
 EntryFlag("recurse", ['c', "recurse"], recurseFunc, recurse=["arg", "noarg"])
-EntryFlag("nested", ['d'], lambda _:True, recurse=["looped"])
-EntryFlag("looped", ['l'], lambda _:True, recurse=["toodeep"])
-EntryFlag("toodeep", ['t'], lambda _:True, recurse=["nested"])
+#Uncomment these to test invalid recurses
+#EntryFlag("nested", ['d'], lambda _:True, recurse=["looped"])
+#EntryFlag("looped", ['l'], lambda _:True, recurse=["toodeep"])
+#EntryFlag("toodeep", ['t'], lambda _:True, recurse=["nested"])
