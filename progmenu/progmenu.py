@@ -1,14 +1,15 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.3.1
+## Version:	4.3.2
 ## Date:	2021.04.11
 ## Description:	Process cmd line arguments
 ## Notes:
 ##    - Verbose must be defined before strict parsing, otherwise parser will identify verbose flag as invalid
+##    - Currently, recursed entries will call their recurses
+##      This means if a sub-recurse prints anything, it will print when recursed
+##    - The desired recurse depth is 2, but this can be somewhat unreliable as the sub-recurses are added to the list of non-recurses once run
 ## Updates:
-##    - Added "default" arg to MenuEntryExecute.
-##    - When default is passed, this value will be used when a flag if a flag isn't called
-##    - Added "defaults" to EntryFlag
+##    - Allowed Entries to recurse other recursed entries (with a max recursion of 2)
 import sys  #Required!
 from .menuentry import MenuEntry
 
@@ -70,7 +71,7 @@ class ProgMenu():
 		or non-entry flag was passed.'''
 		entries={}  #Dict of {MenuEntry:return}
 		toRet={}
-		recurse=[]  #List of entries that need flag info
+		recurse={}  #Dict of entries that need flag info {Name:Entry}
 
 		#Check for help flag first!
 		helpentry=MenuEntry.sgetMenuEntry("help")
@@ -165,27 +166,26 @@ class ProgMenu():
 			for e in entries:
 				#Add to recurse is marked as so, and skip running
 				if e.getRecurse()!=None:
-					recurse.append(e)
+					recurse[e.getName()]=e
 					continue
 				#Process entry's function
 				toRet[e.getName()]=runEntry(e)
 
 			#Process and run all recurse entries
-			print(f"toRet: {toRet}")
 			for curentry in recurse:
-				for currecurse in curentry.getRecurse():  #Loop through curentry recurses
-					print(f"{curentry}|{currecurse}")
+				for currecurse in recurse[curentry].getRecurse():  #Loop through curentry recurses
 					if currecurse not in toRet:
 						#Must be asking for a recursed entry, make sure it isn't 2 layers deep
 						currecurse=MenuEntry.sgetMenuEntry(currecurse)
 						if not any(nest in recurse for nest in currecurse.getRecurse()):
 							#currecurse isn't nested, so run currecurse, then run recurse
+							currecurse.setVRecurse([toRet[n] for n in currecurse.getRecurse()])
 							toRet[currecurse.getName()]=runEntry(currecurse)
 						else:
 							throwError("[RecurseError]: Nested recurse goes too deep!")
-					curentry.setVRecurse([toRet[currecurse]])
-					print(f"curentry: {curentry.getVRecurse()}")
-					toRet[curentry.getName()]=runEntry(curentry)
+					curentryobj=recurse[curentry]
+					curentryobj.setVRecurse([toRet[n] for n in curentryobj.getRecurse()])
+					toRet[curentry]=runEntry(curentryobj)
 
 		return toRet
 

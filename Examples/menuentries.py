@@ -1,10 +1,12 @@
 ##
 ## Author:	Owen Cocjin
-## Version:	1.3
-## Date:	2021.03.31
+## Version:	1.4
+## Date:	2021.04.14
 ## Description:	Example menuentries file
 ## Notes:
 ##    - Added recurse examples
+## Updates:
+##    - Added nested recursed entries
 from progmenu import EntryFlag, EntryArg, EntryKeyArg
 #Menu Entry functions
 def noargFunc():
@@ -45,10 +47,11 @@ def argcurseFunc(arg, rec):
 	return arg
 
 #Menu Entries
+EntryArg("argcurse", ['z', "argcurse"], argcurseFunc, recurse=["recurse"])
 EntryFlag("noarg", ['n', "noarg"], noargFunc, default='Nothing')
 EntryArg("arg", ['a', "arg"], argFunc)
 EntryKeyArg("kwarg", ['k', "kwarg"], kwargFunc, default="default")
 EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=True)
 EntryArg("strictarg", ['r', "sarg", "strictarg"], strictArgFunc, strict=False)
 EntryFlag("recurse", ['c', "recurse"], recurseFunc, recurse=["arg", "noarg"])
-EntryArg("argcurse", ['z', "argcurse"], argcurseFunc, recurse=["recurse"])
+EntryFlag("nested", ['d'], lambda _:True, recurse=["argcurse"])
