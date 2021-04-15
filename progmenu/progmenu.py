@@ -198,11 +198,8 @@ class ProgMenu():
 						throwError(f"[RecurseError:Missing]: Entry '{r}' doesn't exist!")
 				#It's good; Run it!
 				if not curse.getBeenRun():
-					print(f"\t<= {curse.getName() in toRet}")
 					toRet[curse.getName()]=runRecurse(curse)
 					curse.setBeenRun(True)
-					print(f"\t=> {curse.getName() in toRet}")
-					print(f"\tTORET: {toRet}")
 
 		return toRet
 
