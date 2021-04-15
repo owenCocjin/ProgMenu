@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.3.2
+## Version:	4.3.3
 ## Date:	2021.04.11
 ## Description:	Process cmd line arguments
 ## Notes:
@@ -10,6 +10,7 @@
 ##    - The desired recurse depth is 2, but this can be somewhat unreliable as the sub-recurses are added to the list of non-recurses once run
 ## Updates:
 ##    - Allowed Entries to recurse other recursed entries (with a max recursion of 2)
+##    - Should now prevent recurses deeper than 2 layers
 import sys  #Required!
 from .menuentry import MenuEntry
 
@@ -70,7 +71,7 @@ class ProgMenu():
 		plain flag was passed an arg,
 		or non-entry flag was passed.'''
 		toRet={}  #Dict of {EntryName:return}
-		recurse=[]  #Dict of entries that need flag info {Name:Entry}
+		recurse=[]  #List of entries that are recursed
 
 		#Check for help flag first!
 		helpentry=MenuEntry.sgetMenuEntry("help")
@@ -184,19 +185,24 @@ class ProgMenu():
 				#Process entry's function
 				toRet[e.getName()]=runEntry(e)
 				e.setBeenRun(True)
-			print(f"Recurse: {[r.getName() for r in recurse]}\ntoRet: {toRet}")
 
 			#Check for any 2 layered recurses, quit if any exist
+			recursenames=[c.getName() for c in recurse]
 			for curse in recurse:
 				for r in curse.getRecurse():
 					if MenuEntry.sgetMenuEntry(r) in recurse\
 					and\
-					any(sub in recurse for sub in MenuEntry.sgetMenuEntry(r).getRecurse()):
+					any(sub in recursenames for sub in MenuEntry.sgetMenuEntry(r).getRecurse()):
 						throwError(f"[RecurseError:Pre-run]: Nested recurse '{r}' goes too deep!")
 					elif r not in MenuEntry.getEntryNames():  #Calling a recurse that doesn't exist
 						throwError(f"[RecurseError:Missing]: Entry '{r}' doesn't exist!")
 				#It's good; Run it!
-				toRet[e.getName()]=runRecurse(curse)
+				if not curse.getBeenRun():
+					print(f"\t<= {curse.getName() in toRet}")
+					toRet[curse.getName()]=runRecurse(curse)
+					curse.setBeenRun(True)
+					print(f"\t=> {curse.getName() in toRet}")
+					print(f"\tTORET: {toRet}")
 
 		return toRet
 
