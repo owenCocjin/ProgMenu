@@ -69,9 +69,8 @@ class ProgMenu():
 	- If strict is True, throws error if an assigned entry wasn't passed an arg,
 		plain flag was passed an arg,
 		or non-entry flag was passed.'''
-		entries={}  #Dict of {MenuEntry:return}
-		toRet={}
-		recurse={}  #Dict of entries that need flag info {Name:Entry}
+		toRet={}  #Dict of {EntryName:return}
+		recurse=[]  #Dict of entries that need flag info {Name:Entry}
 
 		#Check for help flag first!
 		helpentry=MenuEntry.sgetMenuEntry("help")
@@ -110,6 +109,21 @@ class ProgMenu():
 				return e.execute()  #Execute current MenuEntry
 			else:
 				return e.getDefault()
+		def runRecurse(e):
+			'''Run all recurses in entry e and return e after execution'''
+			vrecursed=[]
+			for sub in [MenuEntry.sgetMenuEntry(r) for r in e.getRecurse()]:
+				if sub.getRecurse():  #Recursed; Not in toRet
+					sub.setVRecurse([toRet[n] for n in sub.getRecurse()])
+					toRet[sub.getName()]=runEntry(sub)
+					sub.setBeenRun(True)
+				vrecursed.append(toRet[sub.getName()])
+			#Add vrecursed to e
+			e.setVRecurse(vrecursed)
+			#Run e
+			return runEntry(e)
+
+
 		#Strict check
 		if strict:
 			#Loop through all entries and check if any strict ones are missing
@@ -151,43 +165,39 @@ class ProgMenu():
 			if self.verbose!=None:
 				MenuEntry.removeEntry('verbose')
 
-		for e in MenuEntry.getMenuEntries():  #Set all entries to None (default)
-			entries[e]=None if p else False
-
 		#if p is False, loop through all entries, setting bool when specified
 		if not p:
-			for e in entries:
+			for e in MenuEntry.getMenuEntries():
 				if e.getMode()==0 and einm(e.getLabels(), self.flags)\
 				or\
 				e.getMode() in [1, 2] and einm(e.getLabels(), self.assigned):
 					toRet[e.getName()]=True
+				else:
+					toRet[e.getName()]=False
 		#if p is True, execute entries
 		elif p:
-			for e in entries:
+			for e in MenuEntry.getMenuEntries():
 				#Add to recurse is marked as so, and skip running
 				if e.getRecurse()!=None:
-					recurse[e.getName()]=e
+					recurse.append(e)
 					continue
 				#Process entry's function
 				toRet[e.getName()]=runEntry(e)
+				e.setBeenRun(True)
+			print(f"Recurse: {[r.getName() for r in recurse]}\ntoRet: {toRet}")
 
 			#Check for any 2 layered recurses, quit if any exist
 			for curse in recurse:
-				for r in recurse[curse].getRecurse():
-					if r in recurse\
+				for r in curse.getRecurse():
+					if MenuEntry.sgetMenuEntry(r) in recurse\
 					and\
-					any(sub in recurse for sub in recurse[r].getRecurse()):
+					any(sub in recurse for sub in MenuEntry.sgetMenuEntry(r).getRecurse()):
 						throwError(f"[RecurseError:Pre-run]: Nested recurse '{r}' goes too deep!")
 					elif r not in MenuEntry.getEntryNames():  #Calling a recurse that doesn't exist
 						throwError(f"[RecurseError:Missing]: Entry '{r}' doesn't exist!")
-				#Move recurse to toRet
-				toRet[curse]=recurse[curse]
-			#Process and run all recurse entries
-			for curentry in recurse:
-				for curse in recurse[curentry].getRecurse():  #Loop through curentry recurses
-					curentryobj=recurse[curentry]
-					curentryobj.setVRecurse([toRet[n] for n in curentryobj.getRecurse()])
-					toRet[curentry]=runEntry(curentryobj)
+				#It's good; Run it!
+				toRet[e.getName()]=runRecurse(curse)
+
 		return toRet
 
 #Flags

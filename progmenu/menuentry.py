@@ -42,6 +42,7 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 		self.recurse=recurse
 		self.vrecurse=None  #Values of recurse
 		self.default=default
+		self.beenrun=False  #Tells parser if already been executed
 		MenuEntry.all_entries.append(self)
 
 	def __str__(self):
@@ -133,6 +134,10 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 		return self.default
 	def setDefault(self, new):
 		self.default=new
+	def getBeenRun(self):
+		return self.beenrun
+	def setBeenRun(self, new):
+		self.beenrun=new
 
 class MenuEntryExecute(MenuEntry):
 	'''Menu Entry with executable qualities'''
