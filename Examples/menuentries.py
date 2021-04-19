@@ -1,14 +1,12 @@
 ##
 ## Author:	Owen Cocjin
-## Version:	1.4.2
+## Version:	1.4.3
 ## Date:	2021.04.14
 ## Description:	Example menuentries file
 ## Notes:
 ##    - Added recurse examples
 ## Updates:
-##    - Added nested recursed entries
-##    - Commented out nested recursed entries (they would throw an error otherwise)
-##    - Adding recurses for testing
+##    - Allows recurse to work on EntryKeyArgs
 from progmenu import EntryFlag, EntryArg, EntryKeyArg
 #Menu Entry functions
 def noargFunc():
@@ -22,10 +20,10 @@ def argFunc(x):
 	print(f"ARG: You gave me: {x}!")
 	return x
 
-def kwargFunc(x='Bad'):
+def kwargFunc(r, x='Bad'):
 	'''Like mode 1, but has a value if no arg given.
 	If not called, uses default value (passed in EntryKeyArg)!'''
-	print(f"KWARG: What I have is: {x}!")
+	print(f"KWARG: What I have is: {x}! Recurse has: {r}")
 	return x
 
 def strictFunc():

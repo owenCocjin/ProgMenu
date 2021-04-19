@@ -177,7 +177,7 @@ class EntryArg(MenuEntryExecute):
 		if self.value==None:
 			return None
 		if self.recurse!=None:
-			return self.function(self.value, *self.vrecurse)
+			return self.function(*self.vrecurse, self.value)
 		else:
 			return self.function(self.value)
 
@@ -194,6 +194,6 @@ class EntryKeyArg(MenuEntryExecute):
 	def execute(self):
 		'''Runs self.function'''
 		if self.recurse!=None:
-			return self.function(*self.value, *self.vrecurse)
+			return self.function(*self.vrecurse, *self.value)
 		else:
 			return self.function(*self.value)
