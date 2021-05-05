@@ -58,6 +58,23 @@ EntryFlag("entryName", ['f', "flag"], aFunc)  #help(MenuEntry) for more details)
 
 Now when you run the main file without using `f` or `flag` as a flag, nothing will happen. But if you do, it prints "This is an entry function!"
 
+>Note: You can just add entries in the main file if you want, but PARSER must be created after the declarations. The best way to do this is to structure the script as such:
+```
+from progmenu import MENU
+def main():
+	'''Add main code here'''
+	print(MENU)
+
+EntryFlag("xmpl", ['x'], lambda:True)
+
+if __name__=="__main__":
+	'''Only called when the script itself is run.
+	Won't run if imported'''
+	PARSER=MENU.parse(True)
+	main()
+```
+> This ensures that everything required is loaded first.
+
 ---
 
 ### Strict Parsing
