@@ -1,12 +1,13 @@
 ##
 ## Author:	Owen Cocjin
-## Version:	1.4.3
-## Date:	2021.04.14
+## Version:	1.4.4
+## Date:	2021.06.19
 ## Description:	Example menuentries file
 ## Notes:
 ##    - Added recurse examples
 ## Updates:
 ##    - Allows recurse to work on EntryKeyArgs
+##    - Fixed syntax to recursed EntryArg
 from progmenu import EntryFlag, EntryArg, EntryKeyArg
 #Menu Entry functions
 def noargFunc():
@@ -41,9 +42,10 @@ def recurseFunc(x, y):
 	print(f"RECURSE: Arg is '{x}' and noarg is '{y}'!")
 	return x, y
 
-def argcurseFunc(arg, rec):
-	'''This takes an arg AND recurse'''
-	print(f"ARGCURSE: Your arg is '{arg}' and the recurse is '{rec}'")
+def argcurseFunc(rec, arg):
+	'''This takes an arg AND recurse.
+The recurse vars are called first, then the arg var.'''
+	print(f"ARGCURSE: The recurse is '{rec}' and your arg is '{arg}'")
 	return arg
 
 #Menu Entries
