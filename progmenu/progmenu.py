@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.3.3
-## Date:	2021.04.11
+## Version:	4.4
+## Date:	2021.11.20
 ## Description:	Process cmd line arguments
 ## Notes:
 ##    - Verbose must be defined before strict parsing, otherwise parser will identify verbose flag as invalid
@@ -9,8 +9,7 @@
 ##      This means if a sub-recurse prints anything, it will print when recursed
 ##    - The desired recurse depth is 2, but this can be somewhat unreliable as the sub-recurses are added to the list of non-recurses once run
 ## Updates:
-##    - Allowed Entries to recurse other recursed entries (with a max recursion of 2)
-##    - Should now prevent recurses deeper than 2 layers
+##  - Changed strict parsing so if an error is thrown, prints help if one exists
 import sys  #Required!
 from .menuentry import MenuEntry
 
@@ -96,6 +95,12 @@ class ProgMenu():
 		def throwError(txt, err=1, shouldexit=True):
 			'''Prints error message and exits with error no err'''
 			print(txt)
+
+			#If "help" entry exists, print it
+			help_entry=MenuEntry.sgetMenuEntry("help")
+			if help_entry:
+				help_entry()
+
 			if shouldexit:
 				exit(err)
 		def runEntry(e):
