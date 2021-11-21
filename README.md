@@ -85,6 +85,7 @@ When calling `MENU.parse()`, you can pass a boolean to the keyword 'strict'. By 
 - An argument is passed to a flag
 - A flag was called but it requires an argument
 - An entry is marked strict, but wasn't called
+
 If a menu entry named "help" (or contains the label "help") exists, that function will be called. Ensure this doesn't collide with the functionality of your program!
 
 To use strict parsing, simply pass the keyword argument `strict=True` to parse:
