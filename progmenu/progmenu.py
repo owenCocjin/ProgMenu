@@ -1,17 +1,25 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.4
-## Date:	2021.11.20
+## Version:	4.5
+## Date:	2021.12.27
 ## Description:	Process cmd line arguments
 ## Notes:
-##    - Verbose must be defined before strict parsing, otherwise parser will identify verbose flag as invalid
-##    - Currently, recursed entries will call their recurses
-##      This means if a sub-recurse prints anything, it will print when recursed
-##    - The desired recurse depth is 2, but this can be somewhat unreliable as the sub-recurses are added to the list of non-recurses once run
+##  - Verbose must be defined before strict parsing, otherwise parser will identify verbose flag as invalid
+##  - Currently, recursed entries will call their recurses
+##    This means if a sub-recurse prints anything, it will print when recursed
+##  - The desired recurse depth is 2, but this can be somewhat unreliable as the sub-recurses are added to the list of non-recurses once run
+##  - ProgMenu.flags list is used more so to confirm that an entry was called.
+##    This means if a positional entry was "called", it will show up in both flags and assigned
 ## Updates:
-##  - Changed strict parsing so if an error is thrown, prints help if one exists
+##  - Updated isEmpty() to use boolean of lists instead of checking lengths
+##  - Added a loop in parser that will remove/add args based on:
+##    + Remove from args if preceding flag is an EntryFlag
+##    + Remove from assigned if preceding flag is an EntryArg
+##    This allows more flexibility; Ex: If the last arg is a target file name, this can be implemented without any additionaly code on the user's part.
+##  - Added positional entries!
+##    This allows an entry to gain it's value from the position of an unassigned arg!
 import sys  #Required!
-from .menuentry import MenuEntry
+from .menuentry import MenuEntry,EntryArg,EntryFlag,EntryPositional
 
 '''-------------------+
 |        SETUP        |
@@ -28,7 +36,10 @@ class ProgMenu():
 		#--------Process sys.argv--------#
 		#Find flags in sys.argv and save them
 		menu_args=sys.argv[1:]  #Remove first arg
-		for i, n in enumerate(menu_args):
+		iterator=0
+		# for i, n in enumerate(menu_args):
+		while iterator<len(menu_args):
+			n=menu_args[iterator]
 			#If current arg starts with '-', it's a flag
 			if n[0]=='-' and len(n)>=2:
 				#If current arg starts with '--', its it's own flag
@@ -38,7 +49,7 @@ class ProgMenu():
 						rec=n[2:].split('=')
 						self.flags.append(rec[0])
 						self.assigned[rec[0]]=rec[1]
-						self.args.append(rec[1])
+						# self.args.append(rec[1])
 					else:
 						#Add the whole flag
 						self.flags.append(n[2:])
@@ -48,15 +59,16 @@ class ProgMenu():
 						self.flags.append(j)
 
 					try:
-						#If the next arg is NOT a flag, add it
-						if menu_args[i+1][0]!='-':
-							self.assigned[n[-1]]=menu_args[i+1]
+						#If the next arg is NOT a flag, add it as arg to this flag
+						if menu_args[iterator+1][0]!='-':
+							self.assigned[n[-1]]=menu_args[iterator+1]
 					except:
 						pass
 
 			else:
-				#counts as an argument
+				#If this isn't an arg for the preceding entry, it will be removed from the args list by MenuEntry.parse()
 				self.args.append(n)
+			iterator+=1
 
 	def __str__(self):
 		return f"flags:    {self.flags}\nassigned: {self.assigned}\nargs:     {self.args}"
@@ -105,14 +117,15 @@ class ProgMenu():
 				exit(err)
 		def runEntry(e):
 			'''Runs entry's function and returns it's result'''
-			if e.getMode() in [1, 2] and einm(e.getLabels(), self.flags):
-				#Get assigned value and execute with said val
-				wl=e.getWorkingLabel(self.assigned.keys())
-				if wl!=None:
-					e.setValue(self.assigned[wl])
-				return e.execute()
-			elif e.getMode() in [0, 2] and einm(e.getLabels(), self.flags):
-				return e.execute()  #Execute current MenuEntry
+			if einm(e.getLabels(),self.flags):
+				if e.getMode() in [1,2,3]:
+					#Get assigned value and execute with said val
+					wl=e.getWorkingLabel(self.assigned.keys())
+					if wl!=None:
+						e.setValue(self.assigned[wl])
+					return e.execute()
+				elif e.getMode() in [0, 2]:
+					return e.execute()  #Execute current MenuEntry
 			else:
 				return e.getDefault()
 		def runRecurse(e):
@@ -129,6 +142,28 @@ class ProgMenu():
 			#Run e
 			return runEntry(e)
 
+	#Setup loops
+		#Check for flags that were assigned an arg and unassign them
+		for e in MenuEntry.all_entries:
+			#Get the label in assigned
+			try:
+				calledlabel=set(self.assigned).intersection(e.getLabels()).pop()
+				if type(e)==EntryFlag:
+					del self.assigned[calledlabel]
+				elif type(e)==EntryArg:
+					self.args.remove(self.assigned[calledlabel])
+			except (KeyError,ValueError):  #Entry not in assigned
+				continue
+
+		#Assign positional args to entries
+		for e in MenuEntry.positionals:
+			#Check if entry is positional (last to prevent false positives)
+			try:
+				e.value=self.args[e.position]
+				self.assigned[e.name]=e.value
+				self.flags.append(e.getLabels()[0])  #There can only be a single label because the label is the name
+			except IndexError:
+				continue  #Ignore as it defaults to None
 
 		#Strict check
 		if strict:
@@ -176,7 +211,7 @@ class ProgMenu():
 			for e in MenuEntry.getMenuEntries():
 				if e.getMode()==0 and einm(e.getLabels(), self.flags)\
 				or\
-				e.getMode() in [1, 2] and einm(e.getLabels(), self.assigned):
+				e.getMode() in [1, 2, 3] and einm(e.getLabels(), self.assigned):
 					toRet[e.getName()]=True
 				else:
 					toRet[e.getName()]=False
@@ -302,10 +337,7 @@ class ProgMenu():
 		Returns in order of: Flags, Assigned, Args
 		- True if it is empty
 		- False if it contains something'''
-		isFlags=True if len(self.flags)==0 else False
-		isAssigned=True if len(self.assigned)==0 else False
-		isArgs=True if len(self.args)==0 else False
-		return isFlags, isAssigned, isArgs
+		return bool(self.flags), bool(self.assigned), bool(self.args)
 
 #Verbose
 	def verboseSetup(self, verbose):

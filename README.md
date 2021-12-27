@@ -146,6 +146,25 @@ Now if the -d flag isn't called, `PARSER["default"]="Nothing"`. If it is called,
 
 ---
 
+## Entry Types:
+
+### EntryFlag:
+- EntryFlags don't have an argument, and will generally simply return a boolean True/False
+
+### EntryArgs:
+- EntrArgs have arguments that can be assigned 1 of 2 ways:
+	1. `-f 'arg_value'`
+	2. `--flag='arg_value'`
+
+### EntryKeyArgs:
+> **NOTE**: This has become obsolete due to the "default" keyword's addition
+- Allows a default value to be set if called without an arg.
+
+### EntryPositional:
+- EntryPositionals get their values from the position of an arg in the MENU's arg list
+
+---
+
 ## Advanced Examples:
 
 #### Using main:
