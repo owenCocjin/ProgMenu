@@ -152,7 +152,7 @@ Now if the -d flag isn't called, `PARSER["default"]="Nothing"`. If it is called,
 - EntryFlags don't have an argument, and will generally simply return a boolean True/False
 
 ### EntryArgs:
-- EntrArgs have arguments that can be assigned 1 of 2 ways:
+- EntryArgs have arguments that can be assigned 1 of 2 ways:
 	1. `-f 'arg_value'`
 	2. `--flag='arg_value'`
 
