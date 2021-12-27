@@ -1,14 +1,13 @@
 ##
 ## Author:	Owen Cocjin
-## Version:	1.4.4
-## Date:	2021.06.19
+## Version:	1.5
+## Date:	2021.12.27
 ## Description:	Example menuentries file
 ## Notes:
 ##    - Added recurse examples
 ## Updates:
-##    - Allows recurse to work on EntryKeyArgs
-##    - Fixed syntax to recursed EntryArg
-from progmenu import EntryFlag, EntryArg, EntryKeyArg
+##    - Added EntryPositional
+from progmenu import EntryFlag, EntryArg, EntryKeyArg, EntryPositional
 #Menu Entry functions
 def noargFunc():
 	'''Takes no arguments'''
@@ -56,6 +55,7 @@ EntryKeyArg("kwarg", ['k', "kwarg"], kwargFunc, default="default", recurse=["rec
 EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=True)
 EntryArg("strictarg", ['r', "sarg", "strictarg"], strictArgFunc, strict=False)
 EntryFlag("recurse", ['c', "recurse"], recurseFunc, recurse=["arg", "noarg"])
+EntryPositional("position",0,lambda p:not bool(print(f"This is the positional arg @ pos 0: {p}")))
 #Uncomment these to test invalid recurses
 #EntryFlag("nested", ['d'], lambda _:True, recurse=["looped"])
 #EntryFlag("looped", ['l'], lambda _:True, recurse=["toodeep"])
