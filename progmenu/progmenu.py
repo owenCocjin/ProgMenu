@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.5
-## Date:	2021.12.27
+## Version:	4.6
+## Date:	2022.01.01
 ## Description:	Process cmd line arguments
 ## Notes:
 ##  - Verbose must be defined before strict parsing, otherwise parser will identify verbose flag as invalid
@@ -18,6 +18,8 @@
 ##    This allows more flexibility; Ex: If the last arg is a target file name, this can be implemented without any additionaly code on the user's part.
 ##  - Added positional entries!
 ##    This allows an entry to gain it's value from the position of an unassigned arg!
+##  - Removes arg from arg list if assigned to positional.
+##    This avoids duplicate positionals
 import sys  #Required!
 from .menuentry import MenuEntry,EntryArg,EntryFlag,EntryPositional
 
@@ -156,14 +158,23 @@ class ProgMenu():
 				continue
 
 		#Assign positional args to entries
+		self.positionals=self.args.copy()  #Without copy there's an issue with
+		errflag=False
 		for e in MenuEntry.positionals:
 			#Check if entry is positional (last to prevent false positives)
 			try:
-				e.value=self.args[e.position]
+				e.value=self.positionals[e.position]
 				self.assigned[e.name]=e.value
 				self.flags.append(e.getLabels()[0])  #There can only be a single label because the label is the name
+				try:
+					self.args.remove(e.value)  #Remove from args list to avoid duplicate positionals
+				except ValueError:  #Can't remove from self.args, meaning there's a missing arg
+					errflag=True
+					throwError(f"[PositionalError]: Missing positional arg '{e.name}'",shouldexit=False)
 			except IndexError:
 				continue  #Ignore as it defaults to None
+		if errflag:
+			exit()
 
 		#Strict check
 		if strict:

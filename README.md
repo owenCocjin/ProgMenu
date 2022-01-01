@@ -163,6 +163,9 @@ Now if the -d flag isn't called, `PARSER["default"]="Nothing"`. If it is called,
 ### EntryPositional:
 - EntryPositionals get their values from the position of an arg in the MENU's arg list
 
+> **NOTE**: Due to how positionals function, they are always considered strict and can't have a default.
+> **NOTE**: Trying to assign >1 positional to the same arg will result in "missing" entries.
+
 ---
 
 ## Advanced Examples:
