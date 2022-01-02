@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.6
+## Version:	4.6.1
 ## Date:	2022.01.01
 ## Description:	Process cmd line arguments
 ## Notes:
@@ -20,6 +20,7 @@
 ##    This allows an entry to gain it's value from the position of an unassigned arg!
 ##  - Removes arg from arg list if assigned to positional.
 ##    This avoids duplicate positionals
+##  - Fixed bug that didn't catch missing positionals
 import sys  #Required!
 from .menuentry import MenuEntry,EntryArg,EntryFlag,EntryPositional
 
@@ -166,13 +167,10 @@ class ProgMenu():
 				e.value=self.positionals[e.position]
 				self.assigned[e.name]=e.value
 				self.flags.append(e.getLabels()[0])  #There can only be a single label because the label is the name
-				try:
-					self.args.remove(e.value)  #Remove from args list to avoid duplicate positionals
-				except ValueError:  #Can't remove from self.args, meaning there's a missing arg
-					errflag=True
-					throwError(f"[PositionalError]: Missing positional arg '{e.name}'",shouldexit=False)
-			except IndexError:
-				continue  #Ignore as it defaults to None
+				self.args.remove(e.value)  #Remove from args list to avoid duplicate positionals
+			except (IndexError,ValueError):  #Can't remove from self.args, meaning there's a missing arg
+				errflag=True
+				throwError(f"[PositionalError]: Missing positional arg '{e.name}'",shouldexit=False)
 		if errflag:
 			exit()
 
