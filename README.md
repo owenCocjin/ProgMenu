@@ -100,12 +100,30 @@ EntryFlag("flg", ['f'], fFunc, True)
 EntryFlag("strct", ['s'], sFunc, strict=True)
 ```
 
+### StrictIf Parameter
+> Handy when you want an entry to be strict only when another flag wasn't called
+
+Occasionally we want to make an entry strict only when another entry **was not** called. For example, we might only require a user to specify an address if a flag "client" is called, but use the default otherwise. This is achieved my specifying the name of entries you want to check for. If **all** the labels are missing, the strictif entry will become strict, raising an error if it isn't called.
+
+In this scenario we want the user to define an IP if the server flag is **not** called:
+```
+EntryFlag("server",['s'])
+EntryArg("ip",['i'],lambda i:i,default="0.0.0.0",strictif=["server"])
+```
+
+The logic follows as such:
+```
+server & !ip == OK
+!server & ip == OK
+!server & !ip == STRICT ERROR
+```
+
 ### Recursed Entries
 > Recursed allows an entry to use return values of other entries as it's own arguments
 
 Sometimes it's handy and cleaner to use return values of other flags as an argument in an entry. For this, you need to use 'recurse'. When making an entry, pass a list of entry names to the keyword `recurse`. When the recursed flag is called it will be passed arguments from other flags in the same order as the recurse list!
 
-Create a recursed entry liek this:
+Create a recursed entry like this:
 ```
 def flagFunc(a):
 	'''Returns "Yes" if the "argie" flag was called'''

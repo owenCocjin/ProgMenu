@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.6.1
-## Date:	2022.01.01
+## Version:	5
+## Date:	2022.03.05
 ## Description:	Process cmd line arguments
 ## Notes:
 ##  - Verbose must be defined before strict parsing, otherwise parser will identify verbose flag as invalid
@@ -11,16 +11,7 @@
 ##  - ProgMenu.flags list is used more so to confirm that an entry was called.
 ##    This means if a positional entry was "called", it will show up in both flags and assigned
 ## Updates:
-##  - Updated isEmpty() to use boolean of lists instead of checking lengths
-##  - Added a loop in parser that will remove/add args based on:
-##    + Remove from args if preceding flag is an EntryFlag
-##    + Remove from assigned if preceding flag is an EntryArg
-##    This allows more flexibility; Ex: If the last arg is a target file name, this can be implemented without any additionaly code on the user's part.
-##  - Added positional entries!
-##    This allows an entry to gain it's value from the position of an unassigned arg!
-##  - Removes arg from arg list if assigned to positional.
-##    This avoids duplicate positionals
-##  - Fixed bug that didn't catch missing positionals
+##  - Added strictif
 import sys  #Required!
 from .menuentry import MenuEntry,EntryArg,EntryFlag,EntryPositional
 
@@ -172,14 +163,19 @@ class ProgMenu():
 				errflag=True
 				throwError(f"[PositionalError]: Missing positional arg '{e.name}'",shouldexit=False)
 		if errflag:
-			exit()
+			exit(1)
 
 		#Strict check
 		if strict:
 			#Loop through all entries and check if any strict ones are missing
 			strictflag=False  #Used to confirm if help was called or not
 			for curentry in MenuEntry.getMenuEntries():
-				if curentry.getStrict() and not any(f in self.flags for f in curentry.getLabels()):
+				called=any(f in self.flags for f in curentry.getLabels())
+				if called:  #Don't need to throw strict error
+					continue
+				if curentry.getStrict() or\
+				curentry.getStrictIf() and\
+				all(f not in self.flags for f in curentry.strictIfLabelList()):  #If curentry is strict and was called
 					strictflag=True
 					throwError(f"[StrictError]: Missing strict flag: '{curentry.getName()}'!", shouldexit=False)
 			if strictflag:

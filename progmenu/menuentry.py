@@ -1,15 +1,14 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	4.4
-## Date:	2021.12.27
+## Version:	5
+## Date:	2022.03.05
 ## Description:	Holds MenuEntry and subclasses
 ## Notes:
 ##  - Requires verbose to be setup BEFORE parsing.
 ## Updates:
-##  - Added "default" arg to MenuEntryExecute.
-##  - When default is passed, this value will be used when a flag if a flag isn't called
-##  - Added "defaults" to EntryFlag
-##  - Added positional entries that pull their args from the position of the args list
+##  - Added StrictIf
+from .errors import *
+
 class MenuEntry():
 	'''Menu entry class.
 name: Entry's name. This is how it will be referenced through the PARSER dictionary.
@@ -32,13 +31,15 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 	keyargs=[]
 	positionals=[]
 
-	def __init__(self, name, labels, function, mode=0, strict=False, recurse=None, default=None):
+	def __init__(self, name, labels, function, mode=0, strict=False, recurse=None, default=None, strictif=None):
 		'''name=Entry name
 		labels=Flags used to address entry
 		function=Function called by entry
 		mode=Mode of entry (see above)
 		strict=Mandatory flag if MENU.parser has strict set to True
 		recurse=A list of other flag names who's output will be used in this entry
+		strictif=List of MenuEntries that if not called, make this entry strict
+			Ex: EntryFlag("ip",['i',"ip"],lambda i:i,default="0.0.0.0",strictif=["server"])  #If server entry was NOT called, this becomes strict
 		'''
 		self.name=name
 		self.labels=labels  #Labels being a list of the flags/args
@@ -49,6 +50,7 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 		self.vrecurse=None  #Values of recurse
 		self.default=default
 		self.beenrun=False  #Tells parser if already been executed
+		self.strictif=strictif
 		MenuEntry.all_entries.append(self)
 
 	def __str__(self):
@@ -102,6 +104,19 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 	def run(self, *args, **kwargs):
 		return self.function(*args, **kwargs)
 
+	def strictIfLabelList(self):
+		'''Get a list of all strictIf labels'''
+		toret=[]
+		menu=None
+		if not self.strictif:
+			return None
+		for n in self.strictif:
+			menu=self.sgetMenuEntry(n)
+			if not menu:
+				raise StrictIfEntryError(f"Entry \"{n}\" doesn't exist!")
+			toret+=menu.getLabels()
+		return toret
+
 	def getName(self):
 		return self.name
 	def setName(self, new):
@@ -144,11 +159,15 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 		return self.beenrun
 	def setBeenRun(self, new):
 		self.beenrun=new
+	def getStrictIf(self):
+		return self.strictif
+	def setStrictIf(self,new):
+		self.strictif=new
 
 class MenuEntryExecute(MenuEntry):
 	'''Menu Entry with executable qualities'''
-	def __init__(self, name, labels, function, mode=0, *, strict=False, recurse=None, default=None):
-		MenuEntry.__init__(self, name, labels, function, mode, strict=strict, recurse=recurse, default=default)
+	def __init__(self, name, labels, function, mode=0, *, strict=False, recurse=None, default=None, strictif=None):
+		MenuEntry.__init__(self, name, labels, function, mode, strict=strict, recurse=recurse, default=default, strictif=strictif)
 		self.value=None
 
 	def getValue(self):
@@ -162,8 +181,8 @@ class MenuEntryExecute(MenuEntry):
 
 class EntryFlag(MenuEntry):
 	'''MenuEntry with default mode 0'''
-	def __init__(self, name, labels, function, *, strict=False, recurse=None, default=None):
-		MenuEntry.__init__(self, name, labels, function, strict=strict, recurse=recurse, default=default)
+	def __init__(self, name, labels, function, *, strict=False, recurse=None, default=None, strictif=None):
+		MenuEntry.__init__(self, name, labels, function, strict=strict, recurse=recurse, default=default, strictif=strictif)
 		MenuEntry.flags.append(self)
 		self.mode=0
 
@@ -175,8 +194,8 @@ class EntryFlag(MenuEntry):
 
 class EntryArg(MenuEntryExecute):
 	'''MenuEntryExecute with default mode 1'''
-	def __init__(self, name, labels, function, *, strict=False, recurse=None, default=None):
-		MenuEntryExecute.__init__(self, name, labels, function, 1, strict=strict, recurse=recurse, default=default)
+	def __init__(self, name, labels, function, *, strict=False, recurse=None, default=None, strictif=None):
+		MenuEntryExecute.__init__(self, name, labels, function, 1, strict=strict, recurse=recurse, default=default, strictif=strictif)
 		MenuEntry.args.append(self)
 		self.value=None
 
@@ -191,8 +210,8 @@ class EntryArg(MenuEntryExecute):
 
 class EntryKeyArg(MenuEntryExecute):
 	'''MenuEntryExecute with default mode 2'''
-	def __init__(self, name, labels, function, *, strict=False, recurse=None, default=None):
-		MenuEntryExecute.__init__(self, name, labels, function, 2, strict=strict, recurse=recurse, default=default)
+	def __init__(self, name, labels, function, *, strict=False, recurse=None, default=None, strictif=None):
+		MenuEntryExecute.__init__(self, name, labels, function, 2, strict=strict, recurse=recurse, default=default, strictif=strictif)
 		MenuEntry.keyargs.append(self)
 		self.value=[]  #Uses a list because otherwise None would always be passed
 
@@ -209,8 +228,8 @@ class EntryKeyArg(MenuEntryExecute):
 
 class EntryPositional(MenuEntryExecute):
 	'''MenuEntryExecute with default mode 3'''
-	def __init__(self,name,position,function,*,strict=False,recurse=None,default=None):
-		MenuEntryExecute.__init__(self,name,[name],function,3,strict=strict,recurse=recurse,default=default)
+	def __init__(self,name,position,function,*,strict=False,recurse=None,default=None,strictif=None):
+		MenuEntryExecute.__init__(self,name,[name],function,3,strict=strict,recurse=recurse,default=default,strictif=strictif)
 		MenuEntry.positionals.append(self)
 		self.position=position
 		self.value=None  #This will be reset during parsing

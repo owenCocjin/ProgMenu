@@ -1,12 +1,12 @@
 ##
 ## Author:	Owen Cocjin
-## Version:	1.5
-## Date:	2021.12.27
+## Version:	1.6
+## Date:	2022.03.05
 ## Description:	Example menuentries file
 ## Notes:
 ##    - Added recurse examples
 ## Updates:
-##    - Added EntryPositional
+##    - Added StrictIf parameter
 from progmenu import EntryFlag, EntryArg, EntryKeyArg, EntryPositional
 #Menu Entry functions
 def noargFunc():
@@ -50,12 +50,13 @@ The recurse vars are called first, then the arg var.'''
 #Menu Entries
 EntryArg("argcurse", ['z', "argcurse"], argcurseFunc, recurse=["recurse"])
 EntryFlag("noarg", ['n', "noarg"], noargFunc, default='Nothing')
-EntryArg("arg", ['a', "arg"], argFunc)
+EntryArg("arg", ['a', "arg"],argFunc)
 EntryKeyArg("kwarg", ['k', "kwarg"], kwargFunc, default="default", recurse=["recurse"])
 EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=True)
 EntryArg("strictarg", ['r', "sarg", "strictarg"], strictArgFunc, strict=False)
 EntryFlag("recurse", ['c', "recurse"], recurseFunc, recurse=["arg", "noarg"])
 EntryPositional("position",0,lambda p:not bool(print(f"This is the positional arg @ pos 0: {p}")))
+EntryArg("strictif",['f',"stif"],lambda f:f,default="Stif default",strictif=["noarg","recurse"])
 #Uncomment these to test invalid recurses
 #EntryFlag("nested", ['d'], lambda _:True, recurse=["looped"])
 #EntryFlag("looped", ['l'], lambda _:True, recurse=["toodeep"])
