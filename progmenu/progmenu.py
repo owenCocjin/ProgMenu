@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	5.1
+## Version:	5.1.1
 ## Date:	2022.03.05
 ## Description:	Process cmd line arguments
 ## Notes:
@@ -13,6 +13,7 @@
 ## Updates:
 ##  - Added strictif
 ##  - Fixed throwError() printing help after each strict error
+##  - Use spaces instead of tabs when printing flags from strict error
 import sys  #Required!
 from .menuentry import MenuEntry,EntryArg,EntryFlag,EntryPositional
 
@@ -185,7 +186,7 @@ class ProgMenu():
 					entryhelp=MenuEntry.help()
 					print("Flags:")
 					for l in entryhelp:
-						print(f"\t{l}: {entryhelp[l]}")
+						print(f"  {l}: {entryhelp[l]}")
 				exit(1)
 
 			#Add verbose to entry list
