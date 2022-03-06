@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 ## Author:	Owen Cocjin
-## Version:	5
+## Version:	5.1
 ## Date:	2022.03.05
 ## Description:	Process cmd line arguments
 ## Notes:
@@ -12,6 +12,7 @@
 ##    This means if a positional entry was "called", it will show up in both flags and assigned
 ## Updates:
 ##  - Added strictif
+##  - Fixed throwError() printing help after each strict error
 import sys  #Required!
 from .menuentry import MenuEntry,EntryArg,EntryFlag,EntryPositional
 
@@ -102,10 +103,10 @@ class ProgMenu():
 			'''Prints error message and exits with error no err'''
 			print(txt)
 
-			#If "help" entry exists, print it
-			help_entry=MenuEntry.sgetMenuEntry("help")
-			if help_entry:
-				help_entry()
+			# #If "help" entry exists, print it
+			# help_entry=MenuEntry.sgetMenuEntry("help")
+			# if help_entry:
+			# 	help_entry()
 
 			if shouldexit:
 				exit(err)
