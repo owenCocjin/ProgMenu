@@ -250,3 +250,8 @@ EntryKeyArg("key", ['k'], lambda k="Blank":k)
 - <b>`[bug:0.2]`</b>: ~~Luckily, these recursed bugs don't seem to affect looped recurses and will appropriately raise an error.~~
 - <b>`[bug:0.3]`</b>: If multiple entries use the same recurse, that recurse will run multiple times (similar to `[bug:0.0]`).
 - <b>`[bug:0.4]`</b>: ~~Recurse doesn't work with EntryKeyArg.~~
+
+---
+
+## To-Do:
+- Want to have optional positional args. The idea would be to add a keyword like "alt_flag" and specify the name(s) of another entry. ProgMenu would then check if the flag was called and returns a value, and if not it would check for the positional value.
