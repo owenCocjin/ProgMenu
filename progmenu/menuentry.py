@@ -233,6 +233,7 @@ class EntryPositional(MenuEntryExecute):
 		MenuEntry.positionals.append(self)
 		self.position=position
 		self.value=None  #This will be reset during parsing
+		self.strict=strict
 	def execute(self):
 		'''Runs self.function'''
 		if self.recurse!=None:
