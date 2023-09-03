@@ -171,6 +171,8 @@ The order of the alt entries doesn't matter as they are just used to tell ProgMe
 
 > **NOTE**: If you specify an EntryFlag as an alt, the arg and positional entry will both be ignored.
 
+> **NOTE**: Even if an alt is specified, strictness will take precedence. So if the positional entry is marked a strict (and strict parsing is enabled), even if the alt was called you will get a strict error.
+
 ---
 
 ## Entry Types:

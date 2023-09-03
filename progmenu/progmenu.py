@@ -261,6 +261,9 @@ class ProgMenu():
 			for e in MenuEntry.positionals:  #Loop through all positional entries
 				#Check if entry is positional (last to prevent false positives)
 				try:
+					#Add this entry to the toRet list so the list shows that the positional is "None"
+					toRet[e.name]=None
+
 					#If the positional was already "run" by an alt, insert a None into the self.args list to align the entries properly
 					#If the positional has an alt, check if it was called, and 
 					if e.alt!=None:
@@ -284,6 +287,7 @@ class ProgMenu():
 					e.setBeenRun(True)
 				except (IndexError,ValueError):  #Can't remove from self.args, meaning there's a missing arg
 					#If the positional isn't strict then don't report as error
+					#This block might no longer be required, and seems to have been orphaned
 					if e.strict:
 						errflag=True
 						throwError(f"[PositionalError]: Missing positional arg '{e.name}'",shouldexit=False)
