@@ -69,7 +69,7 @@ EntryFlag("noarg", ['n', "noarg"], noargFunc, default='Nothing')
 EntryArg("arg", ['a', "arg"],argFunc)
 EntryKeyArg("kwarg", ['k', "kwarg"], kwargFunc, default="default", recurse=["recurse"])
 EntryFlag("recurse", ['c', "recurse"], recurseFunc, recurse=["arg", "noarg"])
-EntryPositional("position",0,lambda p:not bool(print(f"POSITIONAL: This is the positional arg @ pos 0: {p}")),alt=["alt","noarg"])
+EntryPositional("position",0,lambda p:not bool(print(f"POSITIONAL: This is the positional arg @ pos 0: {p}")),strict=True,alt=["alt","noarg"])
 EntryPositional("position2",1,lambda p:not bool(print(f"POSITIONAL2: This is the positional arg @ pos 1: {p}")))
 EntryArg("alt",['l',"alt"],lambda l: not bool(print(f"""ALT: This will skip positional arg 0, as you gave me: "{l}" """)))
 

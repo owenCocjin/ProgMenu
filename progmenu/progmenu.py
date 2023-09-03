@@ -265,9 +265,9 @@ class ProgMenu():
 					#If the positional has an alt, check if it was called, and 
 					if e.alt!=None:
 						for cur_alt in e.alt:
-							print(f"""[|x:progmenu:ProgMenu:parse]: {e.name}'s alt: {cur_alt}""")
+							# print(f"""[|x:progmenu:ProgMenu:parse]: {e.name}'s alt: {cur_alt}""")
 							if einm(MenuEntry.sgetMenuEntry(cur_alt).getLabels(),self.flags):
-								print(f"""[|x:progmenu:ProgMenu:parse]: {cur_alt} was called! Ignoring positional!""")
+								# print(f"""[|x:progmenu:ProgMenu:parse]: {cur_alt} was called! Ignoring positional!""")
 								self.positionals.insert(e.position,None)
 								e.setBeenRun(True)
 								break

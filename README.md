@@ -190,7 +190,6 @@ The order of the alt entries doesn't matter as they are just used to tell ProgMe
 ### EntryPositional:
 - EntryPositionals get their values from the position of an arg in the MENU's arg list
 
-> **NOTE**: Due to how positionals function, they are always considered strict and can't have a default. This can be partially circumvented with the use of the "alt" keyword
 > **NOTE**: Trying to assign >1 positional entry to the same position will result in "missing" entries.
 
 ---
