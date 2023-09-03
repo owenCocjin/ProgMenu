@@ -164,7 +164,8 @@ class ProgMenu():
 				curentry.getStrictIf() and\
 				all(f not in self.flags for f in curentry.strictIfLabelList()):  #If curentry is strict and was called
 					strictflag=True
-					throwError(f"[StrictError]: Missing strict flag: '{curentry.getName()}'!", shouldexit=False)
+					labels_string=[f"-{'-' if len(l)>1 else ''}{l}" for l in curentry.getLabels()]
+					throwError(f"[StrictError]: Missing strict flag: '{curentry}' {labels_string}!", shouldexit=False)
 			if strictflag:
 				#Print entry help if verbose
 				if self.verbose!=None and any(f in self.flags for f in self.verbose.getLabels()):
