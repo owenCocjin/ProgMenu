@@ -260,8 +260,9 @@ EntryKeyArg("key", ['k'], lambda k="Blank":k)
 - <b>`[bug:0.2]`</b>: ~~Luckily, these recursed bugs don't seem to affect looped recurses and will appropriately raise an error.~~
 - <b>`[bug:0.3]`</b>: If multiple entries use the same recurse, that recurse will run multiple times (similar to `[bug:0.0]`).
 - <b>`[bug:0.4]`</b>: ~~Recurse doesn't work with EntryKeyArg.~~
+- <b>`[bug:0.5]`</b>: If alts are used in a positional arg, it is not possible to enforce a strict rule.
 
 ---
 
 ## To-Do:
-- Want to have optional positional args. The idea would be to add a keyword like "alt" to positional args, and specify the name(s) of another entry. If the other entry is called, the positional arg will be ignored, otherwise it will run the positional entry
+- Nothing yet :D!
