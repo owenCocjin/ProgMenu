@@ -250,6 +250,31 @@ EntryArg("arg", ['a'], lambda a:a)
 EntryKeyArg("key", ['k'], lambda k="Blank":k)
 ```
 
+#### Using Alts With Positional Entries:
+> For when you want a positional entry, but also allow the option to use a flag
+
+- Create an entry that will be the alt:
+```
+EntryArg("alt_entry",['a'],lambda a:a)  #Just returns the input
+```
+
+- Next create the positional entry, passing "alt_entry" in a list to the alt arg:
+```
+EntryPositional("positional",0,lambda p:p,alt=["alt_entry"])
+```
+
+- Now, if the `-a` flag isn't called by the user, ProgMenu will look for a positional argument. If `-a` is called, ProgMenu will ignore the positional arg.
+It's important to note that if there are more than one positional entries and an alt is called, the other positional entries will still run, but as if their entry index's were shifted down by 1. Ex:
+```
+EntryArg("alt_entry",['a'],lambda a:a)
+EntrtPositional("pos1",0,lambda b:b,alt=["alt_entry"])
+EntryPositional("pos2",1,lambda c:c)
+
+#Cmdline:
+$ ./main.py argument -a big
+#This will assign "big" to "alt_entry", ignore "pos1", and assign "argument" to "pos2"
+```
+
 ---
 
 ## Bugs:
