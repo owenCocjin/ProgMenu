@@ -47,16 +47,40 @@ The recurse vars are called first, then the arg var.'''
 	print(f"ARGCURSE: The recurse is '{rec}' and your arg is '{arg}'")
 	return arg
 
+def helpFunc():
+	print("""menu.py [-acfhknrsz] <positional>
+Test out ProgMenu!
+  -a; --arg=<arg>;      Takes an argument
+  -c; --recurse;        Reads results from "arg" and "noarg"
+  -f; --stif;           Strict if "noarg" AND "recurse" aren't called
+  -h; --help;           Prints this page
+  -k; --kwarg;          Argument with default value (deprecated)
+  -n; --noarg;          Just a flag; Doesn't take arguments
+  -r; --sarg=<arg>;     Takes an argument AND is strict
+  -s; --strict;         Must be called
+  -z; --argcurse=<arg>; Takes an argument and is recursed
+		""")
+	return True
+
+
 #Menu Entries
 EntryArg("argcurse", ['z', "argcurse"], argcurseFunc, recurse=["recurse"])
 EntryFlag("noarg", ['n', "noarg"], noargFunc, default='Nothing')
 EntryArg("arg", ['a', "arg"],argFunc)
 EntryKeyArg("kwarg", ['k', "kwarg"], kwargFunc, default="default", recurse=["recurse"])
-EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=True)
-EntryArg("strictarg", ['r', "sarg", "strictarg"], strictArgFunc, strict=False)
 EntryFlag("recurse", ['c', "recurse"], recurseFunc, recurse=["arg", "noarg"])
-EntryPositional("position",0,lambda p:not bool(print(f"This is the positional arg @ pos 0: {p}")))
-EntryArg("strictif",['f',"stif"],lambda f:f,default="Stif default",strictif=["noarg","recurse"])
+EntryPositional("position",0,lambda p:not bool(print(f"POSITIONAL: This is the positional arg @ pos 0: {p}")),alt=["alt","noarg"])
+EntryPositional("position2",1,lambda p:not bool(print(f"POSITIONAL2: This is the positional arg @ pos 1: {p}")))
+EntryArg("alt",['l',"alt"],lambda l: not bool(print(f"""ALT: This will skip positional arg 0, as you gave me: "{l}" """)))
+
+#Uncomment for strict flags
+# EntryFlag("strictflag", ['s', "strict"], strictFunc, strict=True)
+# EntryArg("strictarg", ['r', "sarg", "strictarg"], strictArgFunc, strict=False)
+# EntryArg("strictif",['f',"stif"],lambda f:f,default="Stif default",strictif=["noarg","recurse"])
+
+#This is a keyword flag based on it's name being "help".
+#This flag takes precedence over all, and will skip strict checks and immediately exit once done
+EntryFlag("help",['h',"help"],helpFunc)
 #Uncomment these to test invalid recurses
 #EntryFlag("nested", ['d'], lambda _:True, recurse=["looped"])
 #EntryFlag("looped", ['l'], lambda _:True, recurse=["toodeep"])

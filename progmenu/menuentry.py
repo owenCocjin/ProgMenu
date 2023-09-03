@@ -31,7 +31,7 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 	keyargs=[]
 	positionals=[]
 
-	def __init__(self, name, labels, function, mode=0, strict=False, recurse=None, default=None, strictif=None, alt=None):
+	def __init__(self, name, labels, function, mode=0, strict=False, recurse=None, default=None, strictif=None):
 		'''name=Entry name
 		labels=Flags used to address entry
 		function=Function called by entry
@@ -52,7 +52,7 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 		self.default=default
 		self.beenrun=False  #Tells parser if already been executed
 		self.strictif=strictif
-		self.alt=alt
+		# self.alt=alt
 		MenuEntry.all_entries.append(self)
 
 	def __str__(self):
@@ -165,15 +165,11 @@ recurse: A list of entry names who's outputs are used as arguments to the Entry.
 		return self.strictif
 	def setStrictIf(self,new):
 		self.strictif=new
-	def getAlt(self):
-		return self.alt
-	def setAlt(self,new):
-		self.alt=new
 
 class MenuEntryExecute(MenuEntry):
 	'''Menu Entry with executable qualities'''
-	def __init__(self, name, labels, function, mode=0, *, strict=False, recurse=None, default=None, strictif=None, alt=None):
-		MenuEntry.__init__(self, name, labels, function, mode, strict=strict, recurse=recurse, default=default, strictif=strictif, alt=alt)
+	def __init__(self, name, labels, function, mode=0, *, strict=False, recurse=None, default=None, strictif=None):
+		MenuEntry.__init__(self, name, labels, function, mode, strict=strict, recurse=recurse, default=default, strictif=strictif)
 		self.value=None
 
 	def getValue(self):
@@ -235,7 +231,7 @@ class EntryKeyArg(MenuEntryExecute):
 class EntryPositional(MenuEntryExecute):
 	'''MenuEntryExecute with default mode 3'''
 	def __init__(self,name,position,function,*,strict=False,recurse=None,default=None,strictif=None,alt:str=None):
-		MenuEntryExecute.__init__(self,name,[name],function,3,strict=strict,recurse=recurse,default=default,strictif=strictif,alt=alt)
+		MenuEntryExecute.__init__(self,name,[name],function,3,strict=strict,recurse=recurse,default=default,strictif=strictif)
 		MenuEntry.positionals.append(self)
 		self.position=position
 		self.value=None  #This will be reset during parsing
@@ -248,3 +244,8 @@ class EntryPositional(MenuEntryExecute):
 			return self.function(*self.vrecurse,self.value)
 		else:
 			return self.function(self.value)
+
+	def getAlt(self):
+		return self.alt
+	def setAlt(self,new):
+		self.alt=new

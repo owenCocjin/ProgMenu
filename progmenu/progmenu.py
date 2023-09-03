@@ -79,6 +79,7 @@ class ProgMenu():
 		or non-entry flag was passed.'''
 		toRet={}  #Dict of {EntryName:return}
 		recurse=[]  #List of entries that are recursed
+		alt=[]  #List of entries that have alt entries
 
 		#Check for help flag first!
 		helpentry=MenuEntry.sgetMenuEntry("help")
@@ -113,7 +114,7 @@ class ProgMenu():
 				exit(err)
 		def runEntry(e):
 			'''Runs entry's function and returns it's result'''
-			if einm(e.getLabels(),self.flags):
+			if einm(e.getLabels(),self.flags):  #Only run if the entry's been called
 				if e.getMode() in [1,2,3]:
 					#Get assigned value and execute with said val
 					wl=e.getWorkingLabel(self.assigned.keys())
@@ -150,22 +151,6 @@ class ProgMenu():
 					self.args.remove(self.assigned[calledlabel])
 			except (KeyError,ValueError):  #Entry not in assigned
 				continue
-
-		#Assign positional args to entries
-		self.positionals=self.args.copy()  #Without copy there's an issue with
-		errflag=False
-		for e in MenuEntry.positionals:
-			#Check if entry is positional (last to prevent false positives)
-			try:
-				e.value=self.positionals[e.position]
-				self.assigned[e.name]=e.value
-				self.flags.append(e.getLabels()[0])  #There can only be a single label because the label is the name
-				self.args.remove(e.value)  #Remove from args list to avoid duplicate positionals
-			except (IndexError,ValueError):  #Can't remove from self.args, meaning there's a missing arg
-				errflag=True
-				throwError(f"[PositionalError]: Missing positional arg '{e.name}'",shouldexit=False)
-		if errflag:
-			exit(1)
 
 		#Strict check
 		if strict:
@@ -225,13 +210,22 @@ class ProgMenu():
 		#if p is True, execute entries
 		elif p:
 			for e in MenuEntry.getMenuEntries():
-				#Add to recurse is marked as so, and skip running
+				#Skip if the entry is positional 
+				if e.mode==3:
+					#print(f"""[|x:progmenu:ProgMenu:parse]: "{e.name}" entry is positional! Skipping...""")
+					continue
+				#Add to recurse if marked as so, and skip running
 				if e.getRecurse()!=None:
 					recurse.append(e)
 					continue
+				# #Add to alt if marked as so, and skip running
+				# elif e.alt!=None:
+				# 	alt.append(e)
+				# 	continue
 				#Process entry's function
 				toRet[e.getName()]=runEntry(e)
 				e.setBeenRun(True)
+				#print(f"""[|x:progmenu:ProgMenu:parse]: "{e.name}" has been set to "run"!""")
 
 			#Check for any 2 layered recurses, quit if any exist
 			recursenames=[c.getName() for c in recurse]
@@ -247,6 +241,54 @@ class ProgMenu():
 				if not curse.getBeenRun():
 					toRet[curse.getName()]=runRecurse(curse)
 					curse.setBeenRun(True)
+
+			#Check for alt entries, and set the current value to the alt's value if it exists
+			# for a in alt:
+			# 	if (a_alt_value:=MenuEntry.sgetMenuEntry(a.alt).value)!=None:
+			# 		a.value=a_alt_value
+			# 		#Add the value to the toRet variable
+			# 		toRet[a.name]=a.value
+			# 		a.setBeenRun(True)
+				#
+				# else:  #Run the entry as normal
+				# 	toRet[a.name]=runEntry(a)
+				# 	a.setBeenRun(True)
+
+			#Assign positional args to entries
+			self.positionals=self.args.copy()  #Without copy there's an issue with
+			errflag=False
+			#print(f"[|X:progmenu:parse:self.positionals]: {self.positionals}")
+			for e in MenuEntry.positionals:  #Loop through all positional entries
+				#Check if entry is positional (last to prevent false positives)
+				try:
+					#If the positional was already "run" by an alt, insert a None into the self.args list to align the entries properly
+					#If the positional has an alt, check if it was called, and 
+					if e.alt!=None:
+						for cur_alt in e.alt:
+							print(f"""[|x:progmenu:ProgMenu:parse]: {e.name}'s alt: {cur_alt}""")
+							if einm(MenuEntry.sgetMenuEntry(cur_alt).getLabels(),self.flags):
+								print(f"""[|x:progmenu:ProgMenu:parse]: {cur_alt} was called! Ignoring positional!""")
+								self.positionals.insert(e.position,None)
+								e.setBeenRun(True)
+								break
+						if e.beenrun:
+							continue
+					#Change the offset if cur entry has an alt and the alt was called
+					#print(f"[|X:progmenu:ProgMenu:parse]: {self.positionals}")
+					e.value=self.positionals[e.position]
+					self.assigned[e.name]=e.value
+					self.flags.append(e.getLabels()[0])  #There can only be a single label because the label is the name
+					self.args.remove(e.value)  #Remove from args list to avoid duplicate positionals
+					#Run the entry
+					toRet[e.name]=runEntry(e)
+					e.setBeenRun(True)
+				except (IndexError,ValueError):  #Can't remove from self.args, meaning there's a missing arg
+					#If the positional isn't strict then don't report as error
+					if e.strict:
+						errflag=True
+						throwError(f"[PositionalError]: Missing positional arg '{e.name}'",shouldexit=False)
+			if errflag:
+				exit(1)
 
 		return toRet
 

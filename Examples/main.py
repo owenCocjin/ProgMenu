@@ -7,7 +7,7 @@
 ##    - Run this like any python program.
 ## Updates:
 ##    - Changed menuentries import to avoid function collisions
-from progmenu import MENU
+from progmenu import MENU,MenuEntry
 import menuentries
 #If you use verbose printing and menu entries, make sure you initialize verbose first!
 #Otherwise it will throw errors when parsing strictly!

@@ -162,6 +162,15 @@ EntryArg("default", ['d'], lambda a:a, default="Nothing")
 ```
 Now if the -d flag isn't called, `PARSER["default"]="Nothing"`. If it is called, it will be whatever arg is passed to it.
 
+### Positional Entry Alts
+> Sometimes we might want to allow a user to use a flag instead of a positional argument.
+
+EntryPositional entries accept a special keyword "alt" which takes a list of entry names. If any of these alt entries are called, the positional argument is ignored entirely.
+
+The order of the alt entries doesn't matter as they are just used to tell ProgMent to skip the positional entry if any alts are called.
+
+> **NOTE**: If you specify an EntryFlag as an alt, the arg and positional entry will both be ignored.
+
 ---
 
 ## Entry Types:
@@ -181,8 +190,8 @@ Now if the -d flag isn't called, `PARSER["default"]="Nothing"`. If it is called,
 ### EntryPositional:
 - EntryPositionals get their values from the position of an arg in the MENU's arg list
 
-> **NOTE**: Due to how positionals function, they are always considered strict and can't have a default.
-> **NOTE**: Trying to assign >1 positional to the same arg will result in "missing" entries.
+> **NOTE**: Due to how positionals function, they are always considered strict and can't have a default. This can be partially circumvented with the use of the "alt" keyword
+> **NOTE**: Trying to assign >1 positional entry to the same position will result in "missing" entries.
 
 ---
 
@@ -254,4 +263,4 @@ EntryKeyArg("key", ['k'], lambda k="Blank":k)
 ---
 
 ## To-Do:
-- Want to have optional positional args. The idea would be to add a keyword like "alt_flag" and specify the name(s) of another entry. ProgMenu would then check if the flag was called and returns a value, and if not it would check for the positional value.
+- Want to have optional positional args. The idea would be to add a keyword like "alt" to positional args, and specify the name(s) of another entry. If the other entry is called, the positional arg will be ignored, otherwise it will run the positional entry
