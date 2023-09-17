@@ -275,6 +275,8 @@ $ ./main.py argument -a big
 #This will assign "big" to "alt_entry", ignore "pos1", and assign "argument" to "pos2"
 ```
 
+Note: If an alt is called, the positional will take on the value returned by the alt. This makes it so you don't need to check all the values of the alts if the positional wasn't called, and just need to reference one variable
+
 ---
 
 ## Bugs:
@@ -290,4 +292,4 @@ $ ./main.py argument -a big
 ---
 
 ## To-Do:
-- Nothing yet :D!
+- When using an alt, if any of the alts are called, the chosen alt's return value should also be saved to the positional's value. This means when coding, you can just use the positional's value regardless of if the alt was used or not 

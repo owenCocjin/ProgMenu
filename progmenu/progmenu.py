@@ -273,6 +273,7 @@ class ProgMenu():
 							if einm(MenuEntry.sgetMenuEntry(cur_alt).getLabels(),self.flags):
 								# print(f"""[|x:progmenu:ProgMenu:parse]: {cur_alt} was called! Ignoring positional!""")
 								self.positionals.insert(e.position,None)
+								toRet[e.name]=MenuEntry.sgetMenuEntry(cur_alt).value
 								e.setBeenRun(True)
 								break
 						if e.beenrun:
@@ -286,6 +287,7 @@ class ProgMenu():
 					#Run the entry
 					toRet[e.name]=runEntry(e)
 					e.setBeenRun(True)
+
 				except (IndexError,ValueError):  #Can't remove from self.args, meaning there's a missing arg
 					#If the positional isn't strict then don't report as error
 					#This block might no longer be required, and seems to have been orphaned
