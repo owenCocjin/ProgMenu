@@ -412,3 +412,4 @@ class ProgMenu():
 		MenuEntry.removeEntry("verbose")
 		#Return proper function
 		return vprint
+		

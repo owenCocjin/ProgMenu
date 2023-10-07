@@ -294,4 +294,4 @@ Note: If an alt is called, the positional will take on the value returned by the
 ---
 
 ## To-Do:
-- When using an alt, if any of the alts are called, the chosen alt's return value should also be saved to the positional's value. This means when coding, you can just use the positional's value regardless of if the alt was used or not 
+- When using an alt, if any of the alts are called, the chosen alt's return value should also be saved to the positional's value. This means when coding, you can just use the positional's value regardless of if the alt was used or not
