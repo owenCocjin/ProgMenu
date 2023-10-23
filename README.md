@@ -291,7 +291,10 @@ Note: If an alt is called, the positional will take on the value returned by the
 #### EntryArg
 - <b>`[bug:1.0]`</b>: Passing '-' as an argument will cause ProgMenu to think it is a flag. This will make it throw an error saying flag (your flag) requires an argument.
 
+#### EntryPositional
+- <b>`[bug:2.0]`</b>: Using `strictif` along with `alt` doesn't work as expected. When using `strictif` in the alt entry, the flag will never be satisfied. When using `strictif` in the positional, the flag is only satisfied when using the alt entry.
+
 ---
 
 ## To-Do:
-- When using an alt, if any of the alts are called, the chosen alt's return value should also be saved to the positional's value. This means when coding, you can just use the positional's value regardless of if the alt was used or not
+Nothing yet :D
