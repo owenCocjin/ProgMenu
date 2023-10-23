@@ -258,12 +258,13 @@ class ProgMenu():
 			#Assign positional args to entries
 			self.positionals=self.args.copy()  #Without copy there's an issue with
 			errflag=False
-			#print(f"[|X:progmenu:parse:self.positionals]: {self.positionals}")
+			# print(f"[|x:progmenu:parse:self.positionals]: {self.positionals}")
 			for e in MenuEntry.positionals:  #Loop through all positional entries
 				#Check if entry is positional (last to prevent false positives)
+				# print(f"[|x:progmenu:parse:{e}.default]: {e.default}")
 				try:
 					#Add this entry to the toRet list so the list shows that the positional is "None"
-					toRet[e.name]=None
+					toRet[e.name]=e.default
 
 					#If the positional was already "run" by an alt, insert a None into the self.args list to align the entries properly
 					#If the positional has an alt, check if it was called, and 
