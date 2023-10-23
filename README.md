@@ -286,13 +286,15 @@ Note: If an alt is called, the positional will take on the value returned by the
 - <b>`[bug:0.2]`</b>: ~~Luckily, these recursed bugs don't seem to affect looped recurses and will appropriately raise an error.~~
 - <b>`[bug:0.3]`</b>: If multiple entries use the same recurse, that recurse will run multiple times (similar to `[bug:0.0]`).
 - <b>`[bug:0.4]`</b>: ~~Recurse doesn't work with EntryKeyArg.~~
-- <b>`[bug:0.5]`</b>: If alts are used in a positional arg, it is not possible to enforce a strict rule.
 
 #### EntryArg
 - <b>`[bug:1.0]`</b>: Passing '-' as an argument will cause ProgMenu to think it is a flag. This will make it throw an error saying flag (your flag) requires an argument.
 
 #### EntryPositional
 - <b>`[bug:2.0]`</b>: Using `strictif` along with `alt` doesn't work as expected. When using `strictif` in the alt entry, the flag will never be satisfied. When using `strictif` in the positional, the flag is only satisfied when using the alt entry.
+- <b>`[bug:2.1]`</b>: ~~`default` values don't work for positionals.~~
+- <b>`[bug:2.2]`</b>: Marking a positional arg as `strict` makes it impossible to satisfy the strict condition
+
 
 ---
 
